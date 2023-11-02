@@ -5,5 +5,4 @@ dist
 .editorconfig
 electron/**/*.js
 electron/**/*.js.map
-.github
 .vscode
