@@ -1,7 +1,8 @@
 node_modules
 release
 dist
-.*/**/*
+.angular
+.vs
 .editorconfig
 electron/**/*.js
 electron/**/*.js.map
