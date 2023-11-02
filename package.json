@@ -40,7 +40,7 @@
     "bootstrap": "^5.2.3",
     "electron-store": "^8.1.0",
     "sqlite-electron": "^2.2.8",
-    "tslib": "^2.5.0",
+    "tslib": "^2.6.2",
     "zone.js": "~0.13.1"
   },
   "devDependencies": {
