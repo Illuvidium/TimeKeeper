@@ -1,0 +1,22 @@
+::ng-deep {
+    .dropdown-menu.show {
+        padding: 0 !important;
+        background-color: var(--colour-card);
+
+        > button:first-child {
+            border-top-left-radius: 0.4285rem;
+            border-top-right-radius: 0.4285rem;
+        }
+
+        > button:last-child {
+            border-bottom-left-radius: 0.4285rem;
+            border-bottom-right-radius: 0.4285rem;
+        }
+    }
+
+    .dropdown-toggle::after {
+        margin-left: 0.625rem;
+        vertical-align: 0.125rem;
+        font-size: 1rem;
+    }
+}

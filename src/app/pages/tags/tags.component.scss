@@ -1,0 +1,25 @@
+.hide {
+    max-height: 0;
+    transition: max-height 0.2s ease-in-out, padding-top 0.2s ease-in-out,
+        padding-bottom 0.2s ease-in-out;
+
+    &:not(.show) {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+}
+
+.show {
+    max-height: 100px;
+}
+
+.table-tags {
+    > div {
+        &:hover {
+            background-color: var(--colour-hover);
+        }
+        &:not(:first-child) {
+            border-top: 1px solid var(--colour-border);
+        }
+    }
+}

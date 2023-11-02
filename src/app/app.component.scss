@@ -1,3 +1,50 @@
-:host {
-  
+// div.grid {
+//     display: grid;
+//     grid-template-columns: 275px 1fr;
+//     gap: 1rem;
+//     padding: 1rem;
+
+//     > * {
+//         display: block;
+//     }
+// }
+
+div.content {
+    position: fixed;
+    left: 68px;
+    top: 2rem;
+    padding: 1rem 1.5rem;
+    width: calc(100vw - 68px);
+    max-width: calc(100vw - 68px);
+    height: 100vh;
+    max-height: 100vh;
+    overflow: scroll;
+    background-color: var(--colour-background);
+
+    // > div {
+    //     position: relative;
+    //     padding: 1rem 1.5rem 0 1.5rem;
+    //     top: 0;
+    //     left: 0;
+    //     height: calc(100vh - 2rem);
+    //     max-height: calc(100vh - 2rem);
+    //     width: calc(100vw - 68px);
+    //     max-width: calc(100vw - 68px);
+    //     overflow: scroll;
+    // }
 }
+
+// div.grid {
+//     margin-top: 2rem;
+//     display: grid;
+//     grid-template-columns: 68px 1fr;
+//     //gap: 1rem;
+//     //padding: 1rem;
+
+//     > * {
+//         display: block;
+//     }
+
+//     div.menu {
+//     }
+// }

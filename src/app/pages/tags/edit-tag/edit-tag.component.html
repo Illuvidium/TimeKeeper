@@ -1,0 +1,32 @@
+<div class="d-flex gap-2">
+    <div class="frm-group">
+        <label for="newTagText">Text</label>
+        <input
+            id="newTagText"
+            placeholder="Text"
+            type="text"
+            [formControlDirective]="tagForm.controls.Text"
+        />
+    </div>
+    <div class="frm-group">
+        <label>Colour</label>
+        <app-colour-dropdown
+            [value]="tagForm.controls.Colour.value"
+            [formControlDirective]="tagForm.controls.Colour"
+            (resetValue)="ddl.select($event)"
+            #ddl
+        ></app-colour-dropdown>
+    </div>
+    <div class="frm-group">
+        <label>&nbsp;</label>
+        <button
+            type="button"
+            class="frm-control button-primary"
+            (click)="saveTag()"
+        >
+            {{ id === 0 ? "Add" : "Save" }}
+        </button>
+    </div>
+</div>
+
+<app-validation-summary [formGroup]="tagForm"></app-validation-summary>

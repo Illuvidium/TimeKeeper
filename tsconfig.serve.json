@@ -18,7 +18,8 @@
     ]
   },
   "files": [
-    "app/main.ts"
+    "electron/main.ts",
+    "electron/preload.ts"
   ],
   "exclude": [
     "node_modules",

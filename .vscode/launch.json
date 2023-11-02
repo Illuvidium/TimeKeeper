@@ -34,7 +34,8 @@
             "windows": {
                 "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
             },
-            "preLaunchTask": "Build.Main"
+            "preLaunchTask": "Build.Main",
+            "outputCapture": "std"
         }
     ],
     "compounds": [

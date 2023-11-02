@@ -45,8 +45,46 @@
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js';  // Included with Angular CLI.
+import 'zone.js'; // Included with Angular CLI.
 
+declare global {
+    interface Window {
+        electronAPI: {
+            consoleTest: (input: string) => Promise<string>;
+
+            minimizeWindow: () => Promise<any>;
+            maximizeWindow: () => Promise<any>;
+            closeWindow: () => Promise<any>;
+        };
+
+        fromElectron: {
+            maximizeChanged: (isMaximised: boolean) => void;
+        };
+    }
+
+    interface Array<T> {
+        orderBy<TKey>(keySelector: (element: T) => TKey, asc?: boolean): T[];
+    }
+}
+
+Array.prototype.orderBy = function <TKey>(
+    keySelector: (element: any) => TKey,
+    asc = true
+): TKey[] {
+    return this.sort((a: any, b: any) => {
+        const keyA = keySelector(a);
+        const keyB = keySelector(b);
+        const multiplier = asc ? 1 : -1;
+
+        if (keyA < keyB) {
+            return -1 * multiplier;
+        } else if (keyA > keyB) {
+            return 1 * multiplier;
+        } else {
+            return 0;
+        }
+    });
+};
 
 /***************************************************************************************************
  * APPLICATION IMPORTS

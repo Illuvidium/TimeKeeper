@@ -1,0 +1,32 @@
+.items {
+    max-height: 20rem;
+    overflow: auto;
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+    height: 0px;
+}
+
+.button-ghost {
+    font-weight: 300;
+    opacity: 1;
+
+    &:hover {
+        color: var(--colour-text);
+        background-color: var(--colour-hover) !important;
+    }
+
+    & + .items {
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+        > button {
+            color: var(--colour-text);
+
+            &:hover {
+                color: var(--colour-text);
+                background-color: var(--colour-hover) !important;
+            }
+        }
+    }
+}

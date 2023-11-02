@@ -1,0 +1,43 @@
+.button-primary {
+    padding: 10px 18px;
+    transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+        background-color 0.3s ease-in-out;
+    display: block;
+    width: 100%;
+
+    font-size: 1rem;
+    line-height: calc(2.25rem / 2 + 1px);
+    font-weight: 400;
+    background-color: var(--colour-border) !important;
+    color: var(--colour-active);
+    border-color: var(--colour-box-shadow);
+
+    &:not(.dropdown-toggle) {
+        border-color: var(--colour-button-border) !important;
+    }
+
+    &:not(.dropdown-toggle):focus,
+    &:not(.dropdown-toggle):active {
+        border-color: var(--colour-primary) !important;
+        color: var(--colour-primary) !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+    }
+}
+
+.button-ghost {
+    border: 0;
+    box-shadow: 0;
+    background-color: transparent;
+    font-size: 1rem;
+    line-height: calc(2.25rem / 2 + 1px);
+    padding: 0.5rem 0.5rem;
+    margin: 0 0.5rem;
+    border-radius: 0.25rem;
+    opacity: 0.3;
+
+    &:hover {
+        background-color: var(--colour-hover);
+        opacity: 1;
+    }
+}

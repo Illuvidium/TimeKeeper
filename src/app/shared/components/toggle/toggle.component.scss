@@ -1,0 +1,107 @@
+.toggle {
+    cursor: pointer;
+    display: inline-block;
+    user-select: none;
+    margin-bottom: 0;
+
+    &:hover {
+        .toggle-switch:before {
+            background: linear-gradient(to bottom, #fff 0%, #fff 100%);
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+        }
+    }
+
+    &.small {
+        .toggle-switch {
+            width: calc(3.625rem * 0.8);
+            height: calc(2rem * 0.8);
+
+            &::before {
+                width: calc(1.5rem * 0.8);
+                height: calc(1.5rem * 0.8);
+                top: calc(0.25rem * 0.8);
+                left: calc(0.25rem * 0.8);
+                line-height: calc(1.5rem * 0.8);
+                font-size: calc(1rem * 0.8);
+            }
+        }
+
+        .toggle-checkbox {
+            &:checked + .toggle-switch {
+                &::before {
+                    left: calc(2rem * 0.8 - 2px);
+                }
+            }
+
+            &:checked + .toggle-switch:before {
+                left: calc(2rem * 0.8 - 2px);
+            }
+        }
+
+        .toggle-label {
+            margin-left: calc(0.5rem * 0.8);
+            top: calc(0.125rem * 0.8);
+        }
+    }
+
+    .toggle-switch {
+        display: inline-block;
+        background: #ccc;
+        border-radius: 1rem;
+        width: 3.625rem;
+        height: 2rem;
+        position: relative;
+        vertical-align: middle;
+        transition: background 0.25s;
+
+        &::before,
+        &::after {
+            content: "";
+        }
+
+        &::before {
+            display: block;
+            background: linear-gradient(to bottom, #fff 0%, #eee 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+            width: 1.5rem;
+            height: 1.5rem;
+            position: absolute;
+            top: 0.25rem;
+            left: 0.25rem;
+            transition: left 0.25s;
+
+            font: var(--fa-font-solid);
+            content: "\f00d";
+            text-align: center;
+            color: rgba(0, 0, 0, 0.5);
+            line-height: 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    .toggle-checkbox {
+        position: absolute;
+        visibility: hidden;
+
+        &:checked + .toggle-switch {
+            background: #56c080;
+
+            &::before {
+                content: "\f00c";
+                color: rgba(0, 0, 0, 0.7);
+                left: calc(2rem - 2px);
+            }
+        }
+
+        &:checked + .toggle-switch:before {
+            left: calc(2rem - 2px);
+        }
+    }
+
+    .toggle-label {
+        margin-left: 0.5rem;
+        position: relative;
+        top: 0.125rem;
+    }
+}

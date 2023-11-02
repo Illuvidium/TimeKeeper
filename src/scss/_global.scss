@@ -1,0 +1,59 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Poppins, Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: var(--colour-background);
+    color: var(--colour-text);
+}
+
+* {
+    color: var(--colour-text);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-weight: 200;
+    margin: 0;
+    user-select: none;
+}
+
+label {
+    user-select: none;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 2px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    min-width: 600px;
+}

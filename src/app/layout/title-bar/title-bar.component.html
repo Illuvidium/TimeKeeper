@@ -1,0 +1,14 @@
+<div class="title-bar">
+    <div class="title">Timekeeper</div>
+    <div class="buttons">
+        <div (click)="minimise()">
+            <i class="fa-solid fa-window-minimize"></i>
+        </div>
+        <div (click)="maximise()">
+            <i class="fa-regular" [class]="maximiseIcon"></i>
+        </div>
+        <div (click)="close()" class="close">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+    </div>
+</div>

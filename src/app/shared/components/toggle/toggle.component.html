@@ -1,0 +1,10 @@
+<label class="toggle" [class.small]="small">
+    <input
+        class="toggle-checkbox"
+        type="checkbox"
+        [(ngModel)]="isOn"
+        (change)="checkChanged.emit(isOn)"
+    />
+    <div class="toggle-switch"></div>
+    <span class="toggle-label" [innerText]="text"></span>
+</label>

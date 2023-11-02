@@ -1,0 +1,16 @@
+.table {
+    tbody {
+        tr {
+            &:hover {
+                background-color: var(--colour-hover);
+            }
+        }
+    }
+
+    th,
+    td {
+        background-color: transparent;
+        color: var(--colour-text);
+        border-color: var(--colour-border);
+    }
+}
