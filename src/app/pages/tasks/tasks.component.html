@@ -1,8 +1,7 @@
 <div class="page">
     <h2>Tasks</h2>
     <ul>
-        <li>Add task</li>
-        <li>List tasks with sorting</li>
+        <li>Bigger task textbox</li>
         <li>Edit tasks</li>
     </ul>
     <div class="card card-chart">
@@ -10,7 +9,7 @@
             <h5 class="card-category">Add new task</h5>
         </div>
         <div class="card-body pt-0">
-            <app-edit-task></app-edit-task>
+            <app-edit-task (taskSaved)="addTask($event)"></app-edit-task>
         </div>
     </div>
 
@@ -35,33 +34,39 @@
             </h5>
         </div>
         <div class="card-body">
-            <div class="d-flex flex-column table-tags">
-                <!-- <div
-                    *ngFor="let tag of visibleTags"
+            <div class="d-flex flex-column table-tasks">
+                <div
+                    *ngFor="let task of visibleTasks"
                     class="px-2 py-1 hide"
-                    [class.show]="!hideTags.includes(tag.id)"
+                    [class.show]="!hideTasks.includes(task.id)"
                 >
                     <div class="d-flex flex-row">
                         <div class="d-flex align-items-center flex-grow-1">
-                            <app-tag
-                                *ngIf="!editTags.includes(tag.id)"
-                                [colour]="tag.colour"
-                                [text]="tag.name"
-                            ></app-tag>
-                            <app-edit-tag
-                                *ngIf="editTags.includes(tag.id)"
-                                [id]="tag.id"
-                                (tagSaved)="updateTag($event)"
-                            ></app-edit-tag>
+                            <div
+                                class="d-flex gap-2 flex-grow-1"
+                                *ngIf="!editTasks.includes(task.id)"
+                            >
+                                <span class="flex-grow-1">{{ task.name }}</span>
+                                <app-tag
+                                    *ngFor="let tag of getTagsForTask(task)"
+                                    [colour]="tag.colour"
+                                    [text]="tag.name"
+                                ></app-tag>
+                            </div>
+                            <app-edit-task
+                                *ngIf="editTasks.includes(task.id)"
+                                [id]="task.id"
+                                (taskSaved)="updateTask($event)"
+                            ></app-edit-task>
                         </div>
                         <div class="d-flex align-items-center">
                             <button
                                 type="button"
                                 class="button-ghost"
-                                (click)="toggleEdit(tag)"
+                                (click)="toggleEdit(task)"
                                 placement="top"
                                 [ngbTooltip]="
-                                    editTags.includes(tag.id)
+                                    editTasks.includes(task.id)
                                         ? 'Cancel'
                                         : 'Edit'
                                 "
@@ -69,19 +74,21 @@
                                 <i
                                     class="fa-solid"
                                     [class.fa-pencil]="
-                                        !editTags.includes(tag.id)
+                                        !editTasks.includes(task.id)
                                     "
-                                    [class.fa-xmark]="editTags.includes(tag.id)"
+                                    [class.fa-xmark]="
+                                        editTasks.includes(task.id)
+                                    "
                                 ></i>
                             </button>
                             <app-toggle
-                                [checked]="tag.active"
+                                [checked]="task.active"
                                 [small]="true"
-                                (checkChanged)="toggleStatus(tag)"
+                                (checkChanged)="toggleStatus(task)"
                             ></app-toggle>
                         </div>
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
     </div>

@@ -54,6 +54,7 @@ export class TagsComponent implements OnInit {
 
     addTag(tag: Tag) {
         this.tags.push(tag);
+        this.sortTags();
     }
 
     updateTag(tag: Tag) {
@@ -72,6 +73,7 @@ export class TagsComponent implements OnInit {
             this.editTags.push(tag.id);
         }
     }
+
     async toggleShowInactiveTags() {
         this.showInactiveTags = !this.showInactiveTags;
         await this.databaseService.updateSetting(
@@ -132,10 +134,6 @@ export class TagsComponent implements OnInit {
     private async doToggleStatus(tag: Tag) {
         tag.active = !tag.active;
         tag = await this.databaseService.updateTag(tag);
-    }
-
-    log(msg: boolean) {
-        console.log(msg);
     }
 }
 

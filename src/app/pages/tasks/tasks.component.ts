@@ -2,12 +2,11 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnDestroy,
     OnInit,
 } from '@angular/core';
 import { DropdownItem } from '../../shared/components/dropdown/dropdown.component';
 import { DatabaseService } from '../../shared/services/database/database.service';
-import { SettingKey, Task } from '../../shared/interfaces/entities';
+import { SettingKey, Tag, Task } from '../../shared/interfaces/entities';
 
 @Component({
     selector: 'app-tasks',
@@ -15,17 +14,24 @@ import { SettingKey, Task } from '../../shared/interfaces/entities';
     styleUrls: ['./tasks.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TasksComponent implements OnInit, OnDestroy {
+export class TasksComponent implements OnInit {
     tasks: Task[] = [];
+    tags: Tag[] = [];
 
     protected sortOrder: SortOrder = SortOrder.AZ;
     protected showInactiveTasks = false;
+    protected editTasks: number[] = [];
+    protected hideTasks: number[] = [];
 
     get sortOrderOptions(): DropdownItem[] {
         return Object.keys(SortOrder).map(
             (key) =>
                 new DropdownItem(key, SortOrder[key as keyof typeof SortOrder])
         );
+    }
+
+    get visibleTasks() {
+        return this.tasks.filter((t) => t.active || this.showInactiveTasks);
     }
 
     constructor(
@@ -35,20 +41,47 @@ export class TasksComponent implements OnInit, OnDestroy {
 
     async ngOnInit(): Promise<void> {
         this.tasks = await this.databaseService.getTasksByFilter(() => true);
+        this.tags = await this.databaseService.getTagsByFilter(() => true);
+
         this.showInactiveTasks =
             (await this.databaseService.getSetting(
-                SettingKey.Tags_ShowInvactive
+                SettingKey.Tasks_ShowInvactive
             )) ?? false;
         this.sortOrder =
             (await this.databaseService.getSetting(
-                SettingKey.Tags_SortOrder
+                SettingKey.Tasks_SortOrder
             )) ?? SortOrder.AZ;
+
         this.sortTasks();
         this.cdr.detectChanges();
     }
 
-    ngOnDestroy(): void {
-        console.log('The component is being destroyed');
+    addTask(task: Task) {
+        this.tasks.push(task);
+        this.sortTasks();
+    }
+
+    updateTask(task: Task) {
+        const currentTag = this.tasks.find((t) => t.id === task.id);
+        if (currentTag) {
+            currentTag.name = task.name;
+            currentTag.tags = task.tags;
+        }
+        this.editTasks = this.editTasks.filter((t) => t !== task.id);
+    }
+
+    toggleEdit(task: Task) {
+        if (this.editTasks.includes(task.id)) {
+            this.editTasks = this.editTasks.filter((t) => t !== task.id);
+        } else {
+            this.editTasks.push(task.id);
+        }
+    }
+
+    getTagsForTask(task: Task) {
+        return this.tags
+            .filter((t) => task.tags.includes(t.id))
+            .orderBy((t) => t.name);
     }
 
     async toggleShowInactiveTasks() {
@@ -57,6 +90,24 @@ export class TasksComponent implements OnInit, OnDestroy {
             SettingKey.Tasks_ShowInvactive,
             this.showInactiveTasks
         );
+    }
+
+    async toggleStatus(task: Task) {
+        if (this.showInactiveTasks) {
+            await this.doToggleStatus(task);
+            return;
+        }
+
+        setTimeout(() => {
+            this.hideTasks.push(task.id);
+            this.cdr.detectChanges();
+
+            setTimeout(() => {
+                this.hideTasks = this.hideTasks.filter((t) => t !== task.id);
+                void this.doToggleStatus(task);
+                this.cdr.detectChanges();
+            }, 200);
+        }, 250);
     }
 
     async sortOrderChanged(sortOrder: SortOrder) {
@@ -77,7 +128,12 @@ export class TasksComponent implements OnInit, OnDestroy {
                 this.tasks = this.tasks.orderBy((t) => t.name, false);
                 break;
             case SortOrder.Tags:
-                this.tasks = this.tasks.orderBy((t) => t.tags.join(','));
+                this.tasks = this.tasks.orderBy((t) =>
+                    this.tags
+                        .filter((tag) => t.tags.includes(tag.id))
+                        .map((tag) => tag.name)
+                        .join(',')
+                );
                 break;
             case SortOrder.OldNew:
                 this.tasks = this.tasks.orderBy((t) => t.id);
@@ -86,6 +142,11 @@ export class TasksComponent implements OnInit, OnDestroy {
                 this.tasks = this.tasks.orderBy((t) => t.id, false);
                 break;
         }
+    }
+
+    private async doToggleStatus(task: Task) {
+        task.active = !task.active;
+        task = await this.databaseService.updateTask(task);
     }
 }
 
