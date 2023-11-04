@@ -68,6 +68,7 @@ export class TasksComponent implements OnInit {
             currentTag.tags = task.tags;
         }
         this.editTasks = this.editTasks.filter((t) => t !== task.id);
+        this.sortTasks();
     }
 
     toggleEdit(task: Task) {

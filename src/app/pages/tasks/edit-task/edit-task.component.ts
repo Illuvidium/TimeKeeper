@@ -42,8 +42,10 @@ export class EditTaskComponent implements OnInit {
 
         this.task = await this.databaseService.getTask(this.id);
         this.taskForm = new FormGroup({
-            Description: new FormControl('', [new RequiredValidator()]),
-            Tags: new FormControl([]),
+            Description: new FormControl(this.task?.name, [
+                new RequiredValidator(),
+            ]),
+            Tags: new FormControl(this.task?.tags || []),
         });
 
         this.cdr.detectChanges();
@@ -74,7 +76,7 @@ export class EditTaskComponent implements OnInit {
     async updateTask() {
         if (this.task === undefined) return;
 
-        this.task.name = this.taskForm.controls.Text.value;
+        this.task.name = this.taskForm.controls.Description.value;
         this.task.tags = this.taskForm.controls.Tags.value;
 
         this.taskSaved.emit(await this.databaseService.updateTask(this.task));
