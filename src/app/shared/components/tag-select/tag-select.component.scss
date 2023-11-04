@@ -1,27 +1,22 @@
-.items {
-    max-height: 20rem;
-    overflow: auto;
-    background-color: var(--colour-card);
-}
-
-::-webkit-scrollbar {
-    width: 4px;
-    height: 0px;
-}
-
 .button-ghost {
     font-weight: 300;
     opacity: 1;
+    width: auto;
 
     &:hover {
         color: var(--colour-text);
         background-color: var(--colour-hover) !important;
     }
 
+    &::after {
+        display: none;
+    }
+
     & + .items {
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        background-color: var(--colour-card);
 
-        > button {
+        > div {
             color: var(--colour-text);
 
             &:hover {

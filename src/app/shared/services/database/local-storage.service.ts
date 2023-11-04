@@ -238,7 +238,6 @@ export class LocalStorageService implements DataAccess {
 
         currentTask.name = task.name;
         currentTask.tags = task.tags;
-        currentTask.colour = task.colour;
         currentTask.active = task.active;
 
         localStorage.setItem('tasks', JSON.stringify(tasks));

@@ -96,7 +96,6 @@ export class Database {
 
         currentTask.name = task.name;
         currentTask.tags = task.tags;
-        currentTask.colour = task.colour;
         currentTask.active = task.active;
 
         this.database.set('tasks', tasks);

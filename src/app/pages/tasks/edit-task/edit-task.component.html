@@ -1,0 +1,30 @@
+<div class="d-flex gap-2">
+    <div class="frm-group">
+        <label for="newTaskDescription">Description</label>
+        <input
+            id="newTaskDescription"
+            placeholder="Description"
+            type="text"
+            [formControlDirective]="taskForm.controls.Description"
+            (keyup.enter)="saveTask()"
+        />
+    </div>
+    <div class="frm-group">
+        <label>Tags</label>
+        <app-tag-select
+            [(selection)]="taskForm.controls.Tags.value"
+        ></app-tag-select>
+    </div>
+    <div class="frm-group">
+        <label>&nbsp;</label>
+        <button
+            type="button"
+            class="frm-control button-primary"
+            (click)="saveTask()"
+        >
+            {{ id === 0 ? "Add" : "Save" }}
+        </button>
+    </div>
+</div>
+
+<app-validation-summary [formGroup]="taskForm"></app-validation-summary>

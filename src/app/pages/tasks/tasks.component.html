@@ -1,7 +1,88 @@
-<div class="container">
-  <h1 class="title">
-    {{ 'PAGES.DETAIL.TITLE' | translate }}
-  </h1>
-                                               <p>Dingen </p>
-  <a routerLink="/">{{ 'PAGES.DETAIL.BACK_TO_HOME' | translate }}</a>
+<div class="page">
+    <h2>Tasks</h2>
+    <ul>
+        <li>Add task</li>
+        <li>List tasks with sorting</li>
+        <li>Edit tasks</li>
+    </ul>
+    <div class="card card-chart">
+        <div class="card-header">
+            <h5 class="card-category">Add new task</h5>
+        </div>
+        <div class="card-body pt-0">
+            <app-edit-task></app-edit-task>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-category d-flex">
+                <span class="flex-grow-1">Tasks</span>
+                <div class="d-flex align-items-center gap-2">
+                    <app-dropdown
+                        [ghost]="true"
+                        [items]="sortOrderOptions"
+                        [selectedValue]="sortOrder"
+                        (selectedValueChanged)="sortOrderChanged($event)"
+                    ></app-dropdown>
+                    <app-toggle
+                        [text]="'Show inactive tasks'"
+                        [small]="true"
+                        [checked]="showInactiveTasks"
+                        (checkChanged)="toggleShowInactiveTasks()"
+                    ></app-toggle>
+                </div>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-column table-tags">
+                <!-- <div
+                    *ngFor="let tag of visibleTags"
+                    class="px-2 py-1 hide"
+                    [class.show]="!hideTags.includes(tag.id)"
+                >
+                    <div class="d-flex flex-row">
+                        <div class="d-flex align-items-center flex-grow-1">
+                            <app-tag
+                                *ngIf="!editTags.includes(tag.id)"
+                                [colour]="tag.colour"
+                                [text]="tag.name"
+                            ></app-tag>
+                            <app-edit-tag
+                                *ngIf="editTags.includes(tag.id)"
+                                [id]="tag.id"
+                                (tagSaved)="updateTag($event)"
+                            ></app-edit-tag>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button
+                                type="button"
+                                class="button-ghost"
+                                (click)="toggleEdit(tag)"
+                                placement="top"
+                                [ngbTooltip]="
+                                    editTags.includes(tag.id)
+                                        ? 'Cancel'
+                                        : 'Edit'
+                                "
+                            >
+                                <i
+                                    class="fa-solid"
+                                    [class.fa-pencil]="
+                                        !editTags.includes(tag.id)
+                                    "
+                                    [class.fa-xmark]="editTags.includes(tag.id)"
+                                ></i>
+                            </button>
+                            <app-toggle
+                                [checked]="tag.active"
+                                [small]="true"
+                                (checkChanged)="toggleStatus(tag)"
+                            ></app-toggle>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
 </div>

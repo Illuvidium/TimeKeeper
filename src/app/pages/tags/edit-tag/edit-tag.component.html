@@ -6,6 +6,7 @@
             placeholder="Text"
             type="text"
             [formControlDirective]="tagForm.controls.Text"
+            (keyup.enter)="saveTag()"
         />
     </div>
     <div class="frm-group">

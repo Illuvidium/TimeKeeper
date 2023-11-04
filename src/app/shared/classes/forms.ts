@@ -72,13 +72,21 @@ export class FormControl {
     }
 
     constructor(value: any, validators: FormControlValidator[] = []) {
-        this.initialValue = value;
+        this.initialValue = Array.isArray(value)
+            ? [...value]
+            : typeof value === 'object'
+            ? Object.assign({}, value)
+            : value;
         this.value = value;
         this.validators = validators;
     }
 
     reset() {
-        this.value = this.initialValue;
+        this.value = Array.isArray(this.initialValue)
+            ? [...this.initialValue]
+            : typeof this.initialValue === 'object'
+            ? Object.assign({}, this.initialValue)
+            : this.initialValue;
         this.submitAttempted = false;
     }
 }

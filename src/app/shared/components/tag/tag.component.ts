@@ -22,6 +22,7 @@ export class TagComponent {
 
     @Input() text = '';
     @Input() small = false;
+    @Input() deletable = false;
 
     protected selectedColour: Colour | undefined;
 
