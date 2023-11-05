@@ -29,7 +29,7 @@
 
 //         &.active {
 //             > * {
-//                 color: var(--colour-primary);
+//                 color: var(--colour-highlight);
 //             }
 //         }
 
@@ -88,15 +88,15 @@ div.menu {
             cursor: pointer;
 
             > * {
-                color: var(--colour-primary);
+                color: var(--colour-highlight);
             }
         }
 
         &.active {
-            border-left: 3px solid var(--colour-primary);
+            border-left: 3px solid var(--colour-highlight);
 
             > * {
-                color: var(--colour-primary);
+                color: var(--colour-highlight);
             }
         }
 

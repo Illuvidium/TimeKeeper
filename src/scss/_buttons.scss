@@ -8,18 +8,22 @@
     font-size: 1rem;
     line-height: calc(2.25rem / 2 + 1px);
     font-weight: 400;
-    background-color: var(--colour-border) !important;
+    background-color: var(--colour-primary) !important;
     color: var(--colour-active);
-    border-color: var(--colour-box-shadow);
+    border-color: var(--colour-primary-border);
 
     &:not(.dropdown-toggle) {
-        border-color: var(--colour-button-border) !important;
+        border-color: var(--colour-primary-border) !important;
+    }
+
+    &:not(.dropdown-toggle):hover {
+        background-color: var(--colour-primary-hover) !important;
     }
 
     &:not(.dropdown-toggle):focus,
     &:not(.dropdown-toggle):active {
-        border-color: var(--colour-primary) !important;
-        color: var(--colour-primary) !important;
+        border-color: var(--colour-highlight) !important;
+        color: var(--colour-highlight) !important;
         outline: 0 !important;
         box-shadow: none !important;
     }
