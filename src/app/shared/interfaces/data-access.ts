@@ -1,4 +1,10 @@
-import { Tag, Task, Colour, ClockTime, SettingKey } from './entities';
+import {
+    Tag,
+    Task,
+    Colour,
+    ClockTime,
+    SettingKey,
+} from '../../../../shared/entities';
 
 export interface DataAccess {
     // Tags

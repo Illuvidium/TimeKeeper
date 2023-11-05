@@ -1,0 +1,68 @@
+div.accordion {
+    // border: 1px solid var(--colour-border);
+    // border-radius: var(--bs-border-radius);
+    box-shadow: var(--colour-box-shadow) 0px 0px 4px 0px;
+    div[ngbaccordionitem] {
+        // border: 0;
+        // box-shadow: var(--colour-box-shadow) 0px 0px 4px 0px;
+        border-color: var(--colour-border);
+        border: 0;
+        border-bottom: 1px solid;
+        border-radius: 0;
+        background: transparent;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    h2[ngbaccordionheader] button {
+        background-color: var(--colour-title-bar);
+        border-color: var(--colour-border);
+        color: var(--colour-text);
+        box-shadow: none;
+
+        &:focus {
+            box-shadow: none;
+        }
+
+        &::after {
+            color: var(--colour-text);
+            background-image: none;
+            font: var(--fa-font-solid);
+            content: "\f107";
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            right: 1rem;
+        }
+
+        > span {
+            width: 100%;
+            margin-right: 2rem;
+        }
+    }
+    div[ngbAccordionCollapse] {
+        background: var(--colour-card);
+        border-color: var(--colour-border);
+    }
+}
+
+:root {
+    --colour-title-bar: #1b1b2a;
+    --colour-text: rgba(255, 255, 255, 0.8);
+    --colour-hover: rgba(255, 255, 255, 0.05);
+    --colour-primary: #65b6fd;
+    --colour-category: #9a9a9a;
+    --colour-box-shadow: rgba(0, 0, 0, 0.15);
+    --colour-border: #2b3553;
+    --colour-button-border: #535659;
+    --colour-active: rgba(255, 255, 255, 0.8);
+    --colour-placeholder: rgba(255, 255, 255, 0.2);
+    --colour-background: #242439; // #1e1e2f;
+    --colour-card: #27293d;
+    --colour-valid: #1b731e;
+    --colour-invalid: #731b1b;
+    --colour-validation: #e52b2bd9;
+}

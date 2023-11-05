@@ -7,7 +7,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
-import { Colour } from '../../../interfaces/entities';
+import { Colour } from '../../../../../../shared/entities';
 import { DatabaseService } from '../../../services/database/database.service';
 import { DropdownItem } from '../dropdown.component';
 

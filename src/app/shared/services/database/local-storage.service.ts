@@ -6,7 +6,7 @@ import {
     Colour,
     ClockTime,
     SettingKey,
-} from '../../interfaces/entities';
+} from '../../../../../shared/entities';
 
 @Injectable({
     providedIn: 'root',

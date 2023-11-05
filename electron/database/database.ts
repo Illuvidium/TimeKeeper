@@ -1,6 +1,12 @@
 import * as Store from 'electron-store';
 import { migrations } from './migrations';
-import { Tag, Task, Colour, ClockTime, SettingKey } from './entities';
+import {
+    Tag,
+    Task,
+    Colour,
+    ClockTime,
+    SettingKey,
+} from '../../shared/entities';
 
 export class Database {
     private database: Store;
@@ -171,12 +177,12 @@ export class Database {
     }
 
     getSetting(key: SettingKey): any {
-        const settings = this.database.get('settings') as any;
+        const settings = (this.database.get('settings') as any) ?? {};
         return settings[key];
     }
 
     updateSetting(key: SettingKey, value: any): any {
-        const settings = this.database.get('settings') as any;
+        const settings = (this.database.get('settings') as any) ?? {};
         settings[key] = value;
         this.database.set('settings', settings);
     }

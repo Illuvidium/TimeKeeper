@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ElectronApi } from '../../../shared/interfaces/electron-api';
+import { IElectronApi } from '../../../../../shared/electron-api.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ElectronService {
-    private electronAPI: ElectronApi | null;
+    private electronAPI: IElectronApi | null;
 
     get isElectron(): boolean {
         return !!(window && window.electronAPI);
@@ -14,14 +14,14 @@ export class ElectronService {
     constructor() {
         // Conditional imports
         if (this.isElectron) {
-            this.electronAPI = (window.electronAPI as ElectronApi) || null;
+            this.electronAPI = (window.electronAPI as IElectronApi) || null;
             return;
         }
 
         this.electronAPI = null;
     }
 
-    getApi(): ElectronApi | null {
+    getApi(): IElectronApi | null {
         return this.electronAPI;
     }
 

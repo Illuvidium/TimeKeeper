@@ -13,6 +13,7 @@ import { ColourDropdownComponent } from './components/dropdown/colour-dropdown/c
 import { ToggleComponent } from './components/toggle/toggle.component';
 import { ValidationSummaryComponent } from './components/validation-summary/validation-summary.component';
 import { TagSelectComponent } from './components/tag-select/tag-select.component';
+import { StopwatchComponent } from './components/stopwatch/stopwatch.component';
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import { TagSelectComponent } from './components/tag-select/tag-select.component
         ToggleComponent,
         ValidationSummaryComponent,
         TagSelectComponent,
+        StopwatchComponent,
     ],
     imports: [
         CommonModule,
@@ -44,6 +46,7 @@ import { TagSelectComponent } from './components/tag-select/tag-select.component
         ToggleComponent,
         ValidationSummaryComponent,
         TagSelectComponent,
+        StopwatchComponent,
     ],
 })
 export class SharedModule {}

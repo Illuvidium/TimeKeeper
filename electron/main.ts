@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as electronDebug from 'electron-debug';
 import * as electronReloader from 'electron-reloader';
 import { Database } from './database/database';
-import { Tag, Task, Colour, ClockTime, SettingKey } from './database/entities';
+import { Tag, Task, Colour, ClockTime, SettingKey } from '../shared/entities';
 
 let win: BrowserWindow | null = null;
 const database: Database = new Database();
@@ -19,6 +19,8 @@ const createWindow = async () => {
         y: 0,
         width: 1200,
         height: 800,
+        minWidth: 800,
+        minHeight: 400,
         autoHideMenuBar: true,
         frame: false,
         title: 'Timekeeper',
@@ -33,25 +35,6 @@ const createWindow = async () => {
 
     win.setMenuBarVisibility(false);
     win.setMenu(null);
-
-    if (serve) {
-        //const debug = require('electron-debug');
-        electronDebug();
-
-        electronReloader(module);
-        await win.loadURL('http://localhost:4200');
-    } else {
-        // Path when running electron executable
-        let pathIndex = './index.html';
-
-        if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
-            // Path when running electron in local folder
-            pathIndex = '../dist/index.html';
-        }
-
-        const url = new URL(path.join('file:', __dirname, pathIndex));
-        await win.loadURL(url.href);
-    }
 
     // Emitted when the window is closed.
     win.on('closed', () => {
@@ -174,6 +157,25 @@ const createWindow = async () => {
     ipcMain.handle('updateSetting', (event, key: SettingKey, value: any): any =>
         database.updateSetting(key, value)
     );
+
+    if (serve) {
+        //const debug = require('electron-debug');
+        electronDebug();
+
+        electronReloader(module);
+        await win.loadURL('http://localhost:4200');
+    } else {
+        // Path when running electron executable
+        let pathIndex = './index.html';
+
+        if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
+            // Path when running electron in local folder
+            pathIndex = '../dist/index.html';
+        }
+
+        const url = new URL(path.join('file:', __dirname, pathIndex));
+        await win.loadURL(url.href);
+    }
 
     return win;
 };

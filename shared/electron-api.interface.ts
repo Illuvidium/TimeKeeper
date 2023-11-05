@@ -1,6 +1,6 @@
 import { Tag, Task, Colour, ClockTime, SettingKey } from './entities';
 
-export interface ElectronApi {
+export interface IElectronApi {
     consoleTest(input: string): Promise<string>;
 
     minimizeWindow(): Promise<any>;

@@ -6,7 +6,7 @@ import {
     Colour,
     ClockTime,
     SettingKey,
-} from '../../interfaces/entities';
+} from '../../../../../shared/entities';
 import { LocalStorageService } from './local-storage.service';
 import { ElectronStorageService } from './electron-storage.service';
 import { ElectronService } from '../../../core/services';

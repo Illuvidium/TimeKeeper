@@ -6,15 +6,15 @@ import {
     Colour,
     ClockTime,
     SettingKey,
-} from '../../interfaces/entities';
+} from '../../../../../shared/entities';
 import { ElectronService } from '../../../core/services';
-import { ElectronApi } from '../../interfaces/electron-api';
+import { IElectronApi } from '../../../../../shared/electron-api.interface';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ElectronStorageService implements DataAccess {
-    private electronAPI: ElectronApi | null;
+    private electronAPI: IElectronApi | null;
 
     constructor(private electronService: ElectronService) {
         this.electronAPI = electronService.getApi();

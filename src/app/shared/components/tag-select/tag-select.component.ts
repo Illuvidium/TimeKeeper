@@ -7,7 +7,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
-import { Tag } from '../../interfaces/entities';
+import { Tag } from '../../../../../shared/entities';
 import { DatabaseService } from '../../services/database/database.service';
 
 @Component({

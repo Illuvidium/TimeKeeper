@@ -12,7 +12,7 @@ import {
     FormControl,
     RequiredValidator,
 } from '../../../shared/classes/forms';
-import { Tag } from '../../../shared/interfaces/entities';
+import { Tag } from '../../../../../shared/entities';
 import { DatabaseService } from '../../../shared/services/database/database.service';
 
 @Component({

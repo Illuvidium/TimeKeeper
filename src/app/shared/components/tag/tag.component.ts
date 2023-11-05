@@ -4,7 +4,7 @@ import {
     Component,
     Input,
 } from '@angular/core';
-import { Colour } from '../../interfaces/entities';
+import { Colour } from '../../../../../shared/entities';
 import { DatabaseService } from '../../services/database/database.service';
 
 @Component({

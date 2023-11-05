@@ -5,7 +5,7 @@ import {
     OnInit,
 } from '@angular/core';
 import { DatabaseService } from '../../shared/services/database/database.service';
-import { SettingKey, Tag } from '../../shared/interfaces/entities';
+import { SettingKey, Tag } from '../../../../shared/entities';
 import { DropdownItem } from '../../shared/components/dropdown/dropdown.component';
 
 @Component({

@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { DropdownItem } from '../../shared/components/dropdown/dropdown.component';
 import { DatabaseService } from '../../shared/services/database/database.service';
-import { SettingKey, Tag, Task } from '../../shared/interfaces/entities';
+import { SettingKey, Tag, Task } from '../../../../shared/entities';
 
 @Component({
     selector: 'app-tasks',
