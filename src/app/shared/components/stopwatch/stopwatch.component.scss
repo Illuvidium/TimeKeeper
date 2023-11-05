@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // Change to scale watch
 $width: 20px;
 $height: 20px;
@@ -11,18 +13,18 @@ $animation_time: 100ms;
 $animation_timing: cubic-bezier(0.25, -1, 0.735, 0.045);
 
 // Misc
-$top_bar_width: $width/3;
-$hand_width: $width/10;
-$top_line_width: $width/30;
-$top_line_height: $height/1;
+$top_bar_width: math.div($width, 3);
+$hand_width: math.div($width, 10);
+$top_line_width: math.div($width, 30);
+$top_line_height: math.div($height, 1);
 
 // Transform calculators
 @function x-center($element_width) {
-    @return $width/2 - $element_width/2 - 2;
+    @return math.div($width, 2) - math.div($element_width, 2) - 2;
 }
 
 @function y-center($element_height) {
-    @return $height/2 - $element_height/2 - 2;
+    @return math.div($height, 2) - math.div($element_height, 2) - 2;
 }
 
 .position-relative {
@@ -47,26 +49,26 @@ $top_line_height: $height/1;
     height: $height;
     background: $background;
     border-radius: 50%;
-    border: $width/8 solid $color;
+    border: math.div($width, 8) solid $color;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
 
     .top {
         width: $top_bar_width;
-        height: $height/8;
+        height: math.div($height, 8);
         left: 50%;
         top: 4%;
-        transform: translate(-50%, -$height/3);
-        -moz-border-radius: $height/30;
-        -webkit-border-radius: $height/30;
-        border-radius: $height/30;
-        -webkit-border-top-left-radius: $height/20;
-        -webkit-border-top-right-radius: $height/20;
-        -moz-border-radius-topleft: $height/20;
-        -moz-border-radius-topright: $height/20;
-        border-top-left-radius: $height/20;
-        border-top-right-radius: $height/20;
+        transform: translate(-50%, -1 * math.div($height, 3));
+        -moz-border-radius: math.div($height, 30);
+        -webkit-border-radius: math.div($height, 30);
+        border-radius: math.div($height, 30);
+        -webkit-border-top-left-radius: math.div($height, 20);
+        -webkit-border-top-right-radius: math.div($height, 20);
+        -moz-border-radius-topleft: math.div($height, 20);
+        -moz-border-radius-topright: math.div($height, 20);
+        border-top-left-radius: math.div($height, 20);
+        border-top-right-radius: math.div($height, 20);
         transition: transform $animation_time $animation_timing;
 
         &:before {
@@ -80,19 +82,19 @@ $top_line_height: $height/1;
 
     .button {
         width: $top_bar_width;
-        height: $height/10;
+        height: calc($height/10);
         left: 100%;
         top: 25%;
-        transform: translate(-50%, -$height/3) rotate(45deg);
-        -moz-border-radius: $height/30;
-        -webkit-border-radius: $height/30;
-        border-radius: $height/30;
-        -webkit-border-top-left-radius: $height/20;
-        -webkit-border-top-right-radius: $height/20;
-        -moz-border-radius-topleft: $height/20;
-        -moz-border-radius-topright: $height/20;
-        border-top-left-radius: $height/20;
-        border-top-right-radius: $height/20;
+        transform: translate(-50%, -1 * math.div($height, 3)) rotate(45deg);
+        -moz-border-radius: math.div($height, 30);
+        -webkit-border-radius: math.div($height, 3);
+        border-radius: math.div($height, 30);
+        -webkit-border-top-left-radius: math.div($height, 20);
+        -webkit-border-top-right-radius: math.div($height, 20);
+        -moz-border-radius-topleft: math.div($height, 20);
+        -moz-border-radius-topright: math.div($height, 20);
+        border-top-left-radius: math.div($height, 20);
+        border-top-right-radius: math.div($height, 20);
         transition: transform $animation_time $animation_timing;
 
         &:before {
@@ -115,13 +117,13 @@ $top_line_height: $height/1;
 
         &:after {
             width: $hand_width;
-            height: $height * 0.4;
-            margin-top: $height * 0.1;
+            height: calc($height * 0.4);
+            margin-top: calc($height * 0.1);
             background: $color;
-            -moz-border-radius: $hand_width/2;
-            -webkit-border-radius: $hand_width/2;
-            border-radius: $hand_width/2;
-            transform: translateY($height * 0.05);
+            -moz-border-radius: math.div($hand_width, 2);
+            -webkit-border-radius: math.div($hand_width, 2);
+            border-radius: math.div($hand_width, 2);
+            transform: translateY(calc($height * 0.05));
         }
     }
 
@@ -136,13 +138,13 @@ $top_line_height: $height/1;
 
         &:after {
             width: $hand_width;
-            height: $height * 0.25;
-            margin-top: $height * 0.25;
+            height: calc($height * 0.25);
+            margin-top: calc($height * 0.25);
             background: $color;
-            -moz-border-radius: $hand_width/2;
-            -webkit-border-radius: $hand_width/2;
-            border-radius: $hand_width/2;
-            transform: translateY($height * 0.05);
+            -moz-border-radius: math.div($hand_width, 2);
+            -webkit-border-radius: math.div($hand_width, 2);
+            border-radius: math.div($hand_width, 2);
+            transform: translateY(calc($height * 0.05));
         }
     }
 }
