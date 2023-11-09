@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IElectronApi } from '../../../../../shared/electron-api.interface';
+import { IElectronApi } from '../../../../shared/electron-api.interface';
 
 @Injectable({
     providedIn: 'root',

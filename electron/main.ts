@@ -24,6 +24,7 @@ const createWindow = async () => {
         autoHideMenuBar: true,
         frame: false,
         title: 'Timekeeper',
+        icon: path.join(__dirname, 'icons/default.png'),
 
         webPreferences: {
             nodeIntegration: true,
@@ -44,20 +45,7 @@ const createWindow = async () => {
         win = null;
     });
 
-    win.on('resize', () => {
-        win?.webContents.send('electronCallback', 'resize');
-    });
-
-    win.on('resized', () => {
-        win?.webContents.send('electronCallback', 'resized');
-    });
-
-    win.on('minimize', () => {
-        win?.webContents.send('electronCallback', 'minimized');
-    });
-
     win.on('maximize', () => {
-        win?.webContents.send('electronCallback', 'maximized');
         win?.webContents
             .executeJavaScript(`window.fromElectron.maximizeChanged(true)`)
             .then(() => {})
@@ -65,7 +53,6 @@ const createWindow = async () => {
     });
 
     win.on('unmaximize', () => {
-        win?.webContents.send('electronCallback', 'unmaximized');
         win?.webContents
             .executeJavaScript(`window.fromElectron.maximizeChanged(false)`)
             .then(() => {})
@@ -89,6 +76,14 @@ const createWindow = async () => {
 
     ipcMain.handle('closeWindow', () => {
         win?.close();
+    });
+
+    ipcMain.handle('setActiveIcon', () => {
+        win?.setIcon(path.join(__dirname, 'icons/active.png'));
+    });
+
+    ipcMain.handle('setIdleIcon', () => {
+        win?.setIcon(path.join(__dirname, 'icons/idle.png'));
     });
 
     ipcMain.handle('addTag', (event, tag: Tag): Tag => database.addTag(tag));
@@ -139,7 +134,7 @@ const createWindow = async () => {
     ipcMain.handle('getClockTime', (event, id: number): ClockTime | undefined =>
         database.getClockTime(id)
     );
-    ipcMain.handle('getAllClocktimes', (): ClockTime[] =>
+    ipcMain.handle('getAllClockTimes', (): ClockTime[] =>
         database.getClockTimesByFilter(() => true)
     );
     ipcMain.handle(

@@ -1,0 +1,21 @@
+div.clock-bar {
+    width: calc(100vw - 66px);
+    background-color: #410505;
+    position: relative;
+    top: 2rem;
+    left: 66px;
+    z-index: 1;
+    height: 3rem;
+    padding: 0 0.375rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid black;
+
+    &.clocking {
+        background-color: #084105;
+    }
+
+    .frm-group {
+        margin-bottom: 0;
+    }
+}

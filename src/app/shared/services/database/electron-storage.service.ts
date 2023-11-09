@@ -7,7 +7,7 @@ import {
     ClockTime,
     SettingKey,
 } from '../../../../../shared/entities';
-import { ElectronService } from '../../../core/services';
+import { ElectronService } from '../electron.service';
 import { IElectronApi } from '../../../../../shared/electron-api.interface';
 
 @Injectable({

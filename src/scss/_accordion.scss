@@ -1,10 +1,6 @@
 div.accordion {
-    // border: 1px solid var(--colour-border);
-    // border-radius: var(--bs-border-radius);
     box-shadow: var(--colour-box-shadow) 0px 0px 4px 0px;
     div[ngbaccordionitem] {
-        // border: 0;
-        // box-shadow: var(--colour-box-shadow) 0px 0px 4px 0px;
         border-color: var(--colour-border);
         border: 0;
         border-bottom: 1px solid;
@@ -47,22 +43,4 @@ div.accordion {
         background: var(--colour-card);
         border-color: var(--colour-border);
     }
-}
-
-:root {
-    --colour-title-bar: #01011a;
-    --colour-text: rgba(255, 255, 255, 0.8);
-    --colour-hover: rgba(16, 18, 35, 0.5);
-    --colour-highlight: #65b6fd;
-    --colour-category: #9a9a9a;
-    --colour-box-shadow: rgba(0, 0, 0, 0.15);
-    --colour-border: #343747;
-    --colour-button-border: #535659;
-    --colour-active: rgba(255, 255, 255, 0.8);
-    --colour-placeholder: rgba(255, 255, 255, 0.2);
-    --colour-background: #101223;
-    --colour-card: #1a1c2b;
-    --colour-valid: #1b731e;
-    --colour-invalid: #731b1b;
-    --colour-validation: #e52b2bd9;
 }

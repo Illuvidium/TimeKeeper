@@ -5,7 +5,7 @@ import {
     NgZone,
     OnInit,
 } from '@angular/core';
-import { ElectronService } from '../../core/services';
+import { ElectronService } from '../../shared/services/electron.service';
 
 @Component({
     selector: 'app-title-bar',

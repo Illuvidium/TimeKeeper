@@ -6,6 +6,7 @@ import {
     Output,
 } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
+import { Tag } from '../../../../../shared/entities';
 
 @Component({
     selector: 'app-dropdown',
@@ -16,6 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class DropdownComponent {
     @Input() items: DropdownItem[] = [];
     @Input() ghost = false;
+    @Input() placeholder = '';
     @Input() set selectedValue(value: any) {
         this._selectedValue = value;
     }
@@ -23,10 +25,7 @@ export class DropdownComponent {
 
     protected id: string = uuidv4();
     protected get selectedItem(): DropdownItem | undefined {
-        return (
-            this.items.find((x) => x.value === this._selectedValue) ??
-            this.items.find((x) => x)
-        );
+        return this.items.find((x) => x.value === this._selectedValue);
     }
     protected _selectedValue: any;
 
@@ -39,11 +38,13 @@ export class DropdownComponent {
 export class DropdownItem {
     value: any;
     text = '';
-    foreground = 'inherit';
-    background = 'inherit';
+    foreground: string | undefined = undefined;
+    background: string | undefined = undefined;
+    tags: Tag[] = [];
 
-    constructor(value: any, text: string) {
+    constructor(value: any, text: string, tags: Tag[] = []) {
         this.value = value;
         this.text = text;
+        this.tags = tags;
     }
 }

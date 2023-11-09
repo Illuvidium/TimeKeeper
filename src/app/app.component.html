@@ -1,22 +1,7 @@
-<!-- <div class="grid">
-    <div>
-        <app-menu></app-menu>
-    </div>
-    <div>
-        <router-outlet></router-outlet>
-    </div>
-</div> -->
-
 <app-title-bar></app-title-bar>
 
 <app-menu></app-menu>
-
+<app-clock-bar></app-clock-bar>
 <div class="content">
     <router-outlet></router-outlet>
 </div>
-
-<script type="text/javascript">
-    function electronCallback(msg) {
-        console.log(msg);
-    }
-</script>

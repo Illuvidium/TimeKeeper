@@ -3,9 +3,12 @@ import { Tag, Task, Colour, ClockTime, SettingKey } from './entities';
 export interface IElectronApi {
     consoleTest(input: string): Promise<string>;
 
+    // Window
     minimizeWindow(): Promise<any>;
     maximizeWindow(): Promise<any>;
     closeWindow(): Promise<any>;
+    setActiveIcon(): Promise<any>;
+    setIdleIcon(): Promise<any>;
 
     // Tags
     addTag(tag: Tag): Promise<Tag>;

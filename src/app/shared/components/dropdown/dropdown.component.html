@@ -5,7 +5,7 @@
         [class.button-ghost]="ghost"
         [style.color]="selectedItem?.foreground"
         [style.backgroundColor]="selectedItem?.background"
-        [innerText]="selectedItem?.text"
+        [innerText]="selectedItem?.text || placeholder"
         [value]="_selectedValue"
         ngbDropdownToggle
     ></button>
@@ -13,10 +13,22 @@
         <button
             ngbDropdownItem
             *ngFor="let item of items"
+            class="d-flex gap-1"
             [style.color]="item.foreground"
             [style.backgroundColor]="item.background"
-            [innerText]="item.text"
             (click)="select(item)"
-        ></button>
+        >
+            <span
+                class="flex-grow-1"
+                [class.with-tags]="item.tags.length"
+                [innerText]="item.text"
+            ></span>
+            <app-tag
+                *ngFor="let tag of item.tags"
+                [colour]="tag.colour"
+                [small]="true"
+                [text]="tag.name"
+            ></app-tag>
+        </button>
     </div>
 </div>

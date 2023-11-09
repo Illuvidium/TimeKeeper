@@ -10,7 +10,7 @@ import { ReportsComponent } from './pages/reports/reports.component';
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'tags',
+        redirectTo: 'clocking',
         pathMatch: 'full',
     },
     {

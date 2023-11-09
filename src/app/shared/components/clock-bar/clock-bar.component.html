@@ -1,0 +1,41 @@
+<div class="clock-bar gap-2" [class.clocking]="activeClockTime">
+    <div class="flex-grow-1 mx-2 d-flex gap-1 align-items-center">
+        <i *ngIf="!activeClockTime"> Select a task to start clocking </i>
+        <span *ngIf="activeClockTime" class="d-flex gap-2">
+            <span>{{ activeTaskDescription }}</span>
+            <app-tag
+                *ngFor="let tag of activeTaskTags || []"
+                [colour]="tag.colour"
+                [text]="tag.name"
+            ></app-tag>
+        </span>
+    </div>
+
+    <span *ngIf="activeClockTime">
+        <app-time-stamp [milliseconds]="timeTakenMs"></app-time-stamp>
+    </span>
+
+    <span *ngIf="activeClockTime" class="mx-2">
+        <app-stopwatch></app-stopwatch>
+    </span>
+
+    <div *ngIf="activeClockTime" class="frm-group">
+        <button
+            type="button"
+            class="frm-control button-danger"
+            (click)="stopTask()"
+        >
+            Stop
+        </button>
+    </div>
+
+    <div class="frm-group">
+        <app-dropdown
+            id="activeTask"
+            [placeholder]="dropdownPlaceholder"
+            [items]="taskOptions"
+            [selectedValue]="dummyValue"
+            (selectedValueChanged)="startTask($event)"
+        />
+    </div>
+</div>

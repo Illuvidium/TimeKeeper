@@ -40,6 +40,7 @@ export class ColourDropdownComponent implements OnInit {
             text: colour.name,
             foreground: colour.foreground,
             background: colour.background,
+            tags: [],
         }));
 
         this.cdr.detectChanges();

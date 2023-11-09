@@ -9,7 +9,7 @@ import {
 } from '../../../../../shared/entities';
 import { LocalStorageService } from './local-storage.service';
 import { ElectronStorageService } from './electron-storage.service';
-import { ElectronService } from '../../../core/services';
+import { ElectronService } from '../electron.service';
 
 @Injectable({
     providedIn: 'root',

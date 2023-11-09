@@ -5,9 +5,13 @@ import { IElectronApi } from '../shared/electron-api.interface';
 export const api: IElectronApi = {
     consoleTest: (title: string): Promise<any> =>
         ipcRenderer.invoke('consoleTest', title),
+
+    // Window
     minimizeWindow: (): Promise<any> => ipcRenderer.invoke('minimizeWindow'),
     maximizeWindow: (): Promise<any> => ipcRenderer.invoke('maximizeWindow'),
     closeWindow: (): Promise<any> => ipcRenderer.invoke('closeWindow'),
+    setActiveIcon: (): Promise<any> => ipcRenderer.invoke('setActiveIcon'),
+    setIdleIcon: (): Promise<any> => ipcRenderer.invoke('setIdleIcon'),
 
     // Tags
     addTag: (tag: Tag): Promise<Tag> =>

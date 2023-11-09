@@ -2,55 +2,46 @@
     <h2>Clocking</h2>
 
     <ul>
-        <li><s>Build day carroussel</s></li>
-        <li>Start clocking</li>
-        <li>Stop clocking</li>
-        <li>Switch activity</li>
-        <li>Load previous days/entries</li>
+        <li>Display days and entries</li>
         <li>Load more button</li>
         <li>Edit times</li>
         <li>Overlapping indicator</li>
-        <li>Clock bar</li>
+        <li>Update tags/tasks on edit</li>
+        <li>No tasks message</li>
+        <li>Detect date change while clocking</li>
     </ul>
 
-    <div ngbAccordion>
-        <div ngbAccordionItem [collapsed]="false">
+    {{ dates | json }}
+
+    <div *ngIf="dates.length" ngbAccordion>
+        <div
+            ngbAccordionItem
+            *ngFor="let date of dates"
+            [collapsed]="!date.isOpen"
+        >
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>
-                    <span class="d-flex">
+                    <span class="d-flex gap-2">
                         <span class="flex-grow-1">Sat 4 Nov 2023</span>
-                        <span class="mx-2">
-                            <app-stopwatch></app-stopwatch>
-                        </span>
 
+                        <span class="mx-2">
+                            <app-time-stamp
+                                [milliseconds]="65234246"
+                            ></app-time-stamp>
+                        </span>
                         <span>
-                            <span>7</span>
-                            <span class="margin-time">:</span>
-                            <span>54</span>
+                            <app-stopwatch></app-stopwatch>
                         </span>
                     </span>
                 </button>
             </h2>
             <div ngbAccordionCollapse>
                 <div ngbAccordionBody>
-                    <ng-template>
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                        Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                        wolf moon tempor, sunt aliqua put a bird on it squid
-                        single-origin coffee nulla assumenda shoreditch et.
-                        Nihil anim keffiyeh helvetica, craft beer labore wes
-                        anderson cred nesciunt sapiente ea proident. Ad vegan
-                        excepteur butcher vice lomo. Leggings occaecat craft
-                        beer farm-to-table, raw denim aesthetic synth nesciunt
-                        you probably haven't heard of them accusamus labore
-                        sustainable VHS.
-                    </ng-template>
+                    <app-clock-day></app-clock-day>
                 </div>
             </div>
         </div>
-        <div ngbAccordionItem>
+        <!-- <div ngbAccordionItem>
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>Fri 3 Nov 2023</button>
             </h2>
@@ -95,6 +86,6 @@
                     </ng-template>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
