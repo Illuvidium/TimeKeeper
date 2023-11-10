@@ -13,7 +13,7 @@ import {
     RequiredValidator,
 } from '../../../shared/classes/forms';
 import { Task } from '../../../../../shared/entities';
-import { DatabaseService } from '../../../shared/services/database/database.service';
+import { TaskService } from '../../../shared/services/task.service';
 
 @Component({
     selector: 'app-edit-task',
@@ -33,14 +33,14 @@ export class EditTaskComponent implements OnInit {
     });
 
     constructor(
-        private databaseService: DatabaseService,
+        private taskService: TaskService,
         private cdr: ChangeDetectorRef
     ) {}
 
     async ngOnInit(): Promise<void> {
         if (this.id === 0) return;
 
-        this.task = await this.databaseService.getTask(this.id);
+        this.task = await this.taskService.getTaskById(this.id);
         this.taskForm = new FormGroup({
             Description: new FormControl(this.task?.name, [
                 new RequiredValidator(),
@@ -66,7 +66,7 @@ export class EditTaskComponent implements OnInit {
             active: true,
         };
 
-        this.taskSaved.emit(await this.databaseService.addTask(task));
+        this.taskSaved.emit(await this.taskService.addTask(task));
         setTimeout(() => {
             this.taskForm.reset();
             this.cdr.detectChanges();
@@ -79,7 +79,7 @@ export class EditTaskComponent implements OnInit {
         this.task.name = this.taskForm.controls.Description.value;
         this.task.tags = this.taskForm.controls.Tags.value;
 
-        this.taskSaved.emit(await this.databaseService.updateTask(this.task));
+        this.taskSaved.emit(await this.taskService.updateTask(this.task));
         setTimeout(() => {
             this.taskForm.reset();
             this.cdr.detectChanges();

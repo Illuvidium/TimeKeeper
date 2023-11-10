@@ -4,10 +4,12 @@ import {
     Component,
     OnInit,
 } from '@angular/core';
-import { DatabaseService } from '../../services/database/database.service';
 import { ClockTime, Task, Tag } from '../../../../../shared/entities';
 import { DropdownItem } from '../dropdown/dropdown.component';
 import { ElectronService } from '../../services/electron.service';
+import { TagService } from '../../services/tag.service';
+import { TaskService } from '../../services/task.service';
+import { ClockTimeService } from '../../services/clock-time.service';
 
 @Component({
     selector: 'app-clock-bar',
@@ -45,19 +47,18 @@ export class ClockBarComponent implements OnInit {
     }
 
     constructor(
-        private databaseService: DatabaseService,
         private electronService: ElectronService,
+        private tagService: TagService,
+        private taskService: TaskService,
+        private clockTimeService: ClockTimeService,
         private cdr: ChangeDetectorRef
     ) {}
 
     async ngOnInit(): Promise<void> {
-        const clocktimes = await this.databaseService.getClockTimesByFilter(
-            (ct) => !ct.finish
-        );
+        this.activeClockTime = await this.clockTimeService.getActiveClockTime();
 
-        if (clocktimes.length) {
+        if (this.activeClockTime) {
             await this.electronService.getApi()?.setActiveIcon();
-            this.activeClockTime = clocktimes[0];
             this.updateTimeTaken();
             this.startInterval();
         } else {
@@ -65,8 +66,8 @@ export class ClockBarComponent implements OnInit {
         }
 
         await this.loadTasks();
-        this.tags = await this.databaseService.getTagsByFilter((t) =>
-            this.tasks.flatMap((task) => task.tags).includes(t.id)
+        this.tags = await this.tagService.getTagByIds(
+            this.tasks.flatMap((task) => task.tags)
         );
 
         this.setTaskDesctiption();
@@ -74,9 +75,16 @@ export class ClockBarComponent implements OnInit {
     }
 
     async loadTasks() {
-        this.tasks = await this.databaseService.getTasksByFilter(
-            (t) => t.active || t.id === this.activeClockTime?.task
-        );
+        this.tasks = await this.taskService.getActiveTasks();
+        if (
+            this.activeClockTime &&
+            !this.tasks.some((t) => t.id === this.activeClockTime?.task)
+        ) {
+            const task = await this.taskService.getTaskById(
+                this.activeClockTime?.task
+            );
+            task && this.tasks.push(task);
+        }
     }
 
     async startTask(taskId: number) {
@@ -87,7 +95,7 @@ export class ClockBarComponent implements OnInit {
 
         await this.stopTask(false);
 
-        this.activeClockTime = await this.databaseService.addClockTime({
+        this.activeClockTime = await this.clockTimeService.addClockTime({
             active: true,
             id: 0,
             task: taskId,
@@ -131,7 +139,7 @@ export class ClockBarComponent implements OnInit {
     async stopTask(setIdle = true) {
         if (this.activeClockTime) {
             this.activeClockTime.finish = new Date();
-            await this.databaseService.updateClockTime(this.activeClockTime);
+            await this.clockTimeService.updateClockTime(this.activeClockTime);
             if (setIdle) {
                 this.activeClockTime = undefined;
                 await this.electronService.getApi()?.setIdleIcon();

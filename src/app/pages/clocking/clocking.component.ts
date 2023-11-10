@@ -5,8 +5,9 @@ import {
     OnInit,
 } from '@angular/core';
 import { ClockTime, Tag, Task } from '../../../../shared/entities';
-import { DatabaseService } from '../../shared/services/database/database.service';
 import { TagService } from '../../shared/services/tag.service';
+import { TaskService } from '../../shared/services/task.service';
+import { ClockTimeService } from '../../shared/services/clock-time.service';
 
 @Component({
     selector: 'app-clocking',
@@ -22,8 +23,9 @@ export class ClockingComponent implements OnInit {
     protected clockTimeDates: ClockTimeDateGroup[] = [];
 
     constructor(
-        private databaseService: DatabaseService,
         private tagService: TagService,
+        private taskService: TaskService,
+        private clockTimeService: ClockTimeService,
         private cdr: ChangeDetectorRef
     ) {}
 
@@ -45,16 +47,12 @@ export class ClockingComponent implements OnInit {
         const minDate = new Date(maxDate);
         minDate.setDate(minDate.getDate() - 14);
 
-        const entries = await this.databaseService.getClockTimesByFilter(
-            (c) => {
-                const start = new Date(c.start);
-                const finish = c.finish ? new Date(c.finish) : new Date();
-                if (this.clockTimes.some((ct) => ct.id === c.id)) return false;
-                if (start >= minDate && start <= maxDate) return true;
-                if (finish >= minDate && finish <= maxDate) return true;
-                if (start < minDate && finish >= maxDate) return true;
-                return false;
-            }
+        let entries = await this.clockTimeService.getClockTimesInDateRange(
+            minDate,
+            maxDate
+        );
+        entries = entries.filter(
+            (ct) => !this.clockTimes.some((c) => c.id === ct.id)
         );
 
         // Process new entries and assign them to dates
@@ -107,10 +105,7 @@ export class ClockingComponent implements OnInit {
             return;
         }
 
-        const newTasks = await this.databaseService.getTasksByFilter((t) =>
-            newTaskIds.includes(t.id)
-        );
-
+        const newTasks = await this.taskService.getTaskByIds(newTaskIds);
         this.tasks = this.tasks.concat(newTasks);
 
         const newTagIds = newTasks

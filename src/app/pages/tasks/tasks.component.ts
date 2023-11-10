@@ -8,6 +8,7 @@ import { DropdownItem } from '../../shared/components/dropdown/dropdown.componen
 import { DatabaseService } from '../../shared/services/database/database.service';
 import { SettingKey, Tag, Task } from '../../../../shared/entities';
 import { TagService } from '../../shared/services/tag.service';
+import { TaskService } from '../../shared/services/task.service';
 
 @Component({
     selector: 'app-tasks',
@@ -38,11 +39,12 @@ export class TasksComponent implements OnInit {
     constructor(
         private databaseService: DatabaseService,
         private tagService: TagService,
+        private taskService: TaskService,
         private cdr: ChangeDetectorRef
     ) {}
 
     async ngOnInit(): Promise<void> {
-        this.tasks = await this.databaseService.getTasksByFilter(() => true);
+        this.tasks = await this.taskService.getAllTasks();
         this.tags = await this.tagService.getAllTags();
 
         this.showInactiveTasks =
@@ -149,7 +151,7 @@ export class TasksComponent implements OnInit {
 
     private async doToggleStatus(task: Task) {
         task.active = !task.active;
-        task = await this.databaseService.updateTask(task);
+        task = await this.taskService.updateTask(task);
     }
 }
 
