@@ -1,1 +1,10 @@
-<div>List of entries</div>
+<div *ngIf="!!clockTimeDateGroup">
+    <div *ngFor="let clockTime of clockTimeDateGroup.clocktimes">
+        <span> [{{ clockTime.task }}]</span>
+        <span>
+            <app-time-stamp
+                [milliseconds]="getTimeElapsed(clockTime)"
+            ></app-time-stamp>
+        </span>
+    </div>
+</div>

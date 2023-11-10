@@ -8,7 +8,7 @@ import {
     Output,
 } from '@angular/core';
 import { Tag } from '../../../../../shared/entities';
-import { DatabaseService } from '../../services/database/database.service';
+import { TagService } from '../../services/tag.service';
 
 @Component({
     selector: 'app-tag-select',
@@ -40,14 +40,23 @@ export class TagSelectComponent implements OnInit {
     }
 
     constructor(
-        private databaseService: DatabaseService,
+        private tagService: TagService,
         private cdr: ChangeDetectorRef
     ) {}
 
     async ngOnInit(): Promise<void> {
-        this.tags = await this.databaseService.getTagsByFilter(
-            (t) => t.active || this.selectedIDs.includes(t.id)
+        this.tags = await this.tagService.getActiveTags();
+
+        const remainingIds = this.selectedIDs.filter(
+            (id) => !this.tags.some((t) => t.id === id)
         );
+
+        if (remainingIds.length > 0) {
+            this.tags = this.tags.concat(
+                await this.tagService.getTagByIds(remainingIds)
+            );
+        }
+
         this.cdr.detectChanges();
     }
 

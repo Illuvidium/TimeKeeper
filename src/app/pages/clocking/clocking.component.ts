@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { ClockTime, Tag, Task } from '../../../../shared/entities';
 import { DatabaseService } from '../../shared/services/database/database.service';
+import { TagService } from '../../shared/services/tag.service';
 
 @Component({
     selector: 'app-clocking',
@@ -18,10 +19,11 @@ export class ClockingComponent implements OnInit {
     protected tasks: Task[] = [];
     protected tags: Tag[] = [];
     protected clockTimes: ClockTime[] = [];
-    protected dates: ClockTimeDateGroup[] = [];
+    protected clockTimeDates: ClockTimeDateGroup[] = [];
 
     constructor(
         private databaseService: DatabaseService,
+        private tagService: TagService,
         private cdr: ChangeDetectorRef
     ) {}
 
@@ -77,7 +79,7 @@ export class ClockingComponent implements OnInit {
             });
 
             if (dayEntries.length) {
-                this.dates.push({
+                this.clockTimeDates.push({
                     date: new Date(limit),
                     dateKey: dateKey,
                     clocktimes: dayEntries,
@@ -85,6 +87,8 @@ export class ClockingComponent implements OnInit {
                         dateKeyToday === dateKey &&
                         dayEntries.some((c) => !c.finish),
                     isOpen: dateKeyToday === dateKey,
+                    tasks: this.tasks,
+                    tags: this.tags,
                 });
             }
 
@@ -118,21 +122,21 @@ export class ClockingComponent implements OnInit {
             return;
         }
 
-        const newTags = await this.databaseService.getTagsByFilter((t) =>
-            newTagIds.includes(t.id)
-        );
+        const newTags = await this.tagService.getTagByIds(newTagIds);
         this.tags = this.tags.concat(newTags);
 
         this.cdr.detectChanges();
     }
 }
 
-class ClockTimeDateGroup {
+export class ClockTimeDateGroup {
     date: Date;
     dateKey = '';
     clocktimes: ClockTime[] = [];
     hasActiveClockTime = false;
     isOpen = false;
+    tasks: Task[] = [];
+    tags: Tag[] = [];
 
     constructor() {
         this.date = new Date();

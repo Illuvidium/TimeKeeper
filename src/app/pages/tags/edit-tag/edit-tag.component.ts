@@ -13,7 +13,7 @@ import {
     RequiredValidator,
 } from '../../../shared/classes/forms';
 import { Tag } from '../../../../../shared/entities';
-import { DatabaseService } from '../../../shared/services/database/database.service';
+import { TagService } from '../../../shared/services/tag.service';
 
 @Component({
     selector: 'app-edit-tag',
@@ -33,14 +33,14 @@ export class EditTagComponent implements OnInit {
     });
 
     constructor(
-        private databaseService: DatabaseService,
+        private tagService: TagService,
         private cdr: ChangeDetectorRef
     ) {}
 
     async ngOnInit(): Promise<void> {
         if (this.id === 0) return;
 
-        this.tag = await this.databaseService.getTag(this.id);
+        this.tag = await this.tagService.getTagById(this.id);
         this.tagForm = new FormGroup({
             Text: new FormControl(this.tag?.name, [new RequiredValidator()]),
             Colour: new FormControl(this.tag?.colour, [
@@ -66,7 +66,7 @@ export class EditTagComponent implements OnInit {
             active: true,
         };
 
-        this.tagSaved.emit(await this.databaseService.addTag(tag));
+        this.tagSaved.emit(await this.tagService.addTag(tag));
         setTimeout(() => {
             this.tagForm.reset();
             this.cdr.detectChanges();
@@ -79,7 +79,7 @@ export class EditTagComponent implements OnInit {
         this.tag.name = this.tagForm.controls.Text.value;
         this.tag.colour = this.tagForm.controls.Colour.value;
 
-        this.tagSaved.emit(await this.databaseService.updateTag(this.tag));
+        this.tagSaved.emit(await this.tagService.updateTag(this.tag));
         setTimeout(() => {
             this.tagForm.reset();
             this.cdr.detectChanges();

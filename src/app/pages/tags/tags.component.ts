@@ -4,9 +4,10 @@ import {
     Component,
     OnInit,
 } from '@angular/core';
-import { DatabaseService } from '../../shared/services/database/database.service';
 import { SettingKey, Tag } from '../../../../shared/entities';
 import { DropdownItem } from '../../shared/components/dropdown/dropdown.component';
+import { TagService } from '../../shared/services/tag.service';
+import { DatabaseService } from '../../shared/services/database/database.service';
 
 @Component({
     selector: 'app-tags',
@@ -35,11 +36,12 @@ export class TagsComponent implements OnInit {
 
     constructor(
         private databaseService: DatabaseService,
+        private tagService: TagService,
         private cdr: ChangeDetectorRef
     ) {}
 
     async ngOnInit(): Promise<void> {
-        this.tags = await this.databaseService.getTagsByFilter(() => true);
+        this.tags = await this.tagService.getAllTags();
         this.showInactiveTags =
             (await this.databaseService.getSetting(
                 SettingKey.Tags_ShowInvactive
@@ -133,7 +135,7 @@ export class TagsComponent implements OnInit {
 
     private async doToggleStatus(tag: Tag) {
         tag.active = !tag.active;
-        tag = await this.databaseService.updateTag(tag);
+        tag = await this.tagService.updateTag(tag);
     }
 }
 

@@ -9,15 +9,16 @@
         <li>Update tags/tasks on edit</li>
         <li>No tasks message</li>
         <li>Detect date change while clocking</li>
+        <li>Send and listen to event: Tag saved</li>
+        <li>Send and listen to event: Task saved</li>
+        <li>Send and listen to event: ClockTime saved</li>
     </ul>
 
-    {{ dates | json }}
-
-    <div *ngIf="dates.length" ngbAccordion>
+    <div *ngIf="clockTimeDates.length" ngbAccordion>
         <div
             ngbAccordionItem
-            *ngFor="let date of dates"
-            [collapsed]="!date.isOpen"
+            *ngFor="let clockTimeDate of clockTimeDates"
+            [collapsed]="!clockTimeDate.isOpen"
         >
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>
@@ -37,7 +38,9 @@
             </h2>
             <div ngbAccordionCollapse>
                 <div ngbAccordionBody>
-                    <app-clock-day></app-clock-day>
+                    <app-clock-day
+                        [clockTimeDateGroup]="clockTimeDate"
+                    ></app-clock-day>
                 </div>
             </div>
         </div>

@@ -27,8 +27,8 @@ export class DatabaseService implements DataAccess {
             : localStorageService;
     }
 
-    addTag(tag: Tag): Promise<Tag> {
-        return this.database.addTag(tag);
+    async addTag(tag: Tag): Promise<Tag> {
+        return await this.database.addTag(tag);
     }
 
     getTag(id: number): Promise<Tag | undefined> {
