@@ -2,16 +2,8 @@
     <h2>Clocking</h2>
 
     <ul>
-        <li>Display days and entries</li>
-        <li>Load more button</li>
         <li>Edit times</li>
         <li>Overlapping indicator</li>
-        <li>Update tags/tasks on edit</li>
-        <li>No tasks message</li>
-        <li>Detect date change while clocking</li>
-        <li>Send and listen to event: Tag saved</li>
-        <li>Send and listen to event: Task saved</li>
-        <li>Send and listen to event: ClockTime saved</li>
     </ul>
 
     <div *ngIf="clockTimeDates.length" ngbAccordion>
@@ -23,72 +15,41 @@
             <h2 ngbAccordionHeader>
                 <button ngbAccordionButton>
                     <span class="d-flex gap-2">
-                        <span class="flex-grow-1">Sat 4 Nov 2023</span>
+                        <span class="flex-grow-1">
+                            {{ clockTimeDate.formattedDate }}</span
+                        >
 
-                        <span class="mx-2">
+                        <span [class.mx-2]="clockTimeDate.isRunning">
                             <app-time-stamp
-                                [milliseconds]="65234246"
+                                [milliseconds]="clockTimeDate.totalElapsedMs"
                             ></app-time-stamp>
                         </span>
-                        <span>
+                        <span *ngIf="clockTimeDate.isRunning">
                             <app-stopwatch></app-stopwatch>
                         </span>
                     </span>
                 </button>
             </h2>
             <div ngbAccordionCollapse>
-                <div ngbAccordionBody>
+                <div class="p-0" ngbAccordionBody>
                     <app-clock-day
                         [clockTimeDateGroup]="clockTimeDate"
+                        [tasks]="tasks"
+                        [tags]="tags"
                     ></app-clock-day>
                 </div>
             </div>
         </div>
-        <!-- <div ngbAccordionItem>
-            <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>Fri 3 Nov 2023</button>
-            </h2>
-            <div ngbAccordionCollapse>
-                <div ngbAccordionBody>
-                    <ng-template>
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                        Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                        wolf moon tempor, sunt aliqua put a bird on it squid
-                        single-origin coffee nulla assumenda shoreditch et.
-                        Nihil anim keffiyeh helvetica, craft beer labore wes
-                        anderson cred nesciunt sapiente ea proident. Ad vegan
-                        excepteur butcher vice lomo. Leggings occaecat craft
-                        beer farm-to-table, raw denim aesthetic synth nesciunt
-                        you probably haven't heard of them accusamus labore
-                        sustainable VHS.
-                    </ng-template>
-                </div>
-            </div>
-        </div>
-        <div ngbAccordionItem>
-            <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>Thu 2 Nov 2023</button>
-            </h2>
-            <div ngbAccordionCollapse>
-                <div ngbAccordionBody>
-                    <ng-template>
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                        Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-                        wolf moon tempor, sunt aliqua put a bird on it squid
-                        single-origin coffee nulla assumenda shoreditch et.
-                        Nihil anim keffiyeh helvetica, craft beer labore wes
-                        anderson cred nesciunt sapiente ea proident. Ad vegan
-                        excepteur butcher vice lomo. Leggings occaecat craft
-                        beer farm-to-table, raw denim aesthetic synth nesciunt
-                        you probably haven't heard of them accusamus labore
-                        sustainable VHS.
-                    </ng-template>
-                </div>
-            </div>
-        </div> -->
+    </div>
+
+    <div class="frm-group" *ngIf="!noMoreDates">
+        <button
+            type="button"
+            class="frm-control button-primary w-100"
+            [disabled]="loadingDates"
+            (click)="loadMoreDates()"
+        >
+            Load more dates
+        </button>
     </div>
 </div>

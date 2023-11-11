@@ -1,8 +1,15 @@
 <div class="clock-bar gap-2" [class.clocking]="activeClockTime">
     <div class="flex-grow-1 mx-2 d-flex gap-1 align-items-center">
-        <i *ngIf="!activeClockTime"> Select a task to start clocking </i>
+        <i *ngIf="!activeClockTime">
+            <ng-container *ngIf="taskOptions.length"
+                >Select a task to start clocking</ng-container
+            >
+            <ng-container *ngIf="!taskOptions.length"
+                >First create a task in order to start clocking</ng-container
+            >
+        </i>
         <span *ngIf="activeClockTime" class="d-flex gap-2">
-            <span>{{ activeTaskDescription }}</span>
+            <span [innerText]="activeTaskDescription"></span>
             <app-tag
                 *ngFor="let tag of activeTaskTags || []"
                 [colour]="tag.colour"

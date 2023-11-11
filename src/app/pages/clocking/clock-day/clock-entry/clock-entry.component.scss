@@ -1,0 +1,23 @@
+.clock-time {
+    align-items: baseline;
+
+    .times {
+        width: 68px;
+        font-size: 0.65rem;
+        opacity: 0.6;
+        margin-top: 0.275rem;
+        text-align: justify;
+        height: 1rem;
+
+        &:after {
+            content: "";
+            height: 0;
+            width: 100%;
+            display: inline-block;
+        }
+    }
+
+    .time-elapsed {
+        opacity: 0.8;
+    }
+}

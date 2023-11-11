@@ -2,13 +2,15 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    OnDestroy,
     OnInit,
 } from '@angular/core';
+import { SubscriptionLike } from 'rxjs';
 import { ClockTime, Task, Tag } from '../../../../../shared/entities';
 import { DropdownItem } from '../dropdown/dropdown.component';
 import { ElectronService } from '../../services/electron.service';
-import { TagService } from '../../services/tag.service';
-import { TaskService } from '../../services/task.service';
+import { TagEventType, TagService } from '../../services/tag.service';
+import { TaskEventType, TaskService } from '../../services/task.service';
 import { ClockTimeService } from '../../services/clock-time.service';
 
 @Component({
@@ -17,13 +19,16 @@ import { ClockTimeService } from '../../services/clock-time.service';
     styleUrls: ['./clock-bar.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ClockBarComponent implements OnInit {
+export class ClockBarComponent implements OnInit, OnDestroy {
+    private tagSavedSubscription: SubscriptionLike;
+    private taskSavedSubscription: SubscriptionLike;
+    private tickSubscription: SubscriptionLike;
+
     protected activeClockTime: ClockTime | undefined;
     protected tasks: Task[] = [];
     protected tags: Tag[] = [];
 
     protected dummyValue: undefined | number;
-    protected updateInterval: any | undefined;
 
     protected activeTaskDescription: string | undefined;
     protected activeTaskTags: Tag[] | undefined;
@@ -35,6 +40,7 @@ export class ClockBarComponent implements OnInit {
 
     get taskOptions(): DropdownItem[] {
         return this.tasks
+            .filter((t) => t.active || this.activeClockTime?.task === t.id)
             .orderBy((t) => t.name)
             .map(
                 (t) =>
@@ -52,7 +58,63 @@ export class ClockBarComponent implements OnInit {
         private taskService: TaskService,
         private clockTimeService: ClockTimeService,
         private cdr: ChangeDetectorRef
-    ) {}
+    ) {
+        this.tagSavedSubscription = this.tagService.tagSaved.subscribe(
+            (event) => {
+                switch (event.type) {
+                    case TagEventType.Added:
+                        this.tags.push(event.tag);
+                        break;
+                    case TagEventType.Updated:
+                        this.tags = this.tags.filter(
+                            (t) => t.id !== event.tag.id
+                        );
+                        this.tags.push(event.tag);
+                        break;
+                }
+
+                this.cdr.detectChanges();
+            }
+        );
+
+        this.taskSavedSubscription = this.taskService.taskSaved.subscribe(
+            (event) => {
+                switch (event.type) {
+                    case TaskEventType.Added:
+                        this.tasks.push(event.task);
+                        break;
+                    case TaskEventType.Updated:
+                        this.tasks = this.tasks.filter(
+                            (t) => t.id !== event.task.id
+                        );
+                        this.tasks.push(event.task);
+                        break;
+                }
+
+                const newTagIds = event.task.tags.filter(
+                    (id) => !this.tags.some((t) => t.id === id)
+                );
+                if (newTagIds.length > 0) {
+                    this.tagService
+                        .getTagByIds(newTagIds)
+                        .then((tags) => {
+                            this.tags = this.tags.concat(tags);
+                            this.setTaskDesctiption();
+                            this.cdr.detectChanges();
+                        })
+                        .catch(() => {});
+                }
+
+                this.setTaskDesctiption();
+                this.cdr.detectChanges();
+            }
+        );
+
+        this.tickSubscription = this.clockTimeService.tick.subscribe(() => {
+            this.updateTimeTaken();
+            this.cdr.detectChanges();
+        });
+    }
 
     async ngOnInit(): Promise<void> {
         this.activeClockTime = await this.clockTimeService.getActiveClockTime();
@@ -60,7 +122,7 @@ export class ClockBarComponent implements OnInit {
         if (this.activeClockTime) {
             await this.electronService.getApi()?.setActiveIcon();
             this.updateTimeTaken();
-            this.startInterval();
+            this.clockTimeService.startTicking();
         } else {
             await this.electronService.getApi()?.setIdleIcon();
         }
@@ -72,6 +134,12 @@ export class ClockBarComponent implements OnInit {
 
         this.setTaskDesctiption();
         this.cdr.detectChanges();
+    }
+
+    ngOnDestroy(): void {
+        this.tagSavedSubscription.unsubscribe();
+        this.taskSavedSubscription.unsubscribe();
+        this.tickSubscription.unsubscribe();
     }
 
     async loadTasks() {
@@ -104,7 +172,7 @@ export class ClockBarComponent implements OnInit {
         });
 
         this.setTaskDesctiption();
-        this.startInterval();
+        this.clockTimeService.startTicking();
         await this.electronService.getApi()?.setActiveIcon();
     }
 
@@ -120,13 +188,6 @@ export class ClockBarComponent implements OnInit {
         );
     }
 
-    startInterval() {
-        this.updateInterval = setInterval(() => {
-            this.updateTimeTaken();
-            this.cdr.detectChanges();
-        }, 1000);
-    }
-
     updateTimeTaken() {
         if (!this.activeClockTime) {
             this.timeTakenMs = 0;
@@ -137,6 +198,7 @@ export class ClockBarComponent implements OnInit {
     }
 
     async stopTask(setIdle = true) {
+        setIdle && this.clockTimeService.stopTicking();
         if (this.activeClockTime) {
             this.activeClockTime.finish = new Date();
             await this.clockTimeService.updateClockTime(this.activeClockTime);

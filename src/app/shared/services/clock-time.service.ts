@@ -11,6 +11,24 @@ export class ClockTimeService {
     clockTimeSaved: Observable<ClockTimeEvent> =
         this.clockTimeSavedSource.asObservable();
 
+    private tickSource: Subject<void> = new Subject<void>();
+    tick: Observable<void> = this.tickSource.asObservable();
+
+    private tickInterval: number | undefined;
+
+    startTicking() {
+        if (!this.tickInterval)
+            this.tickInterval = window.setInterval(
+                () => this.tickSource.next(),
+                1000
+            );
+        this.tickSource.next();
+    }
+
+    stopTicking() {
+        if (this.tickInterval) clearInterval(this.tickInterval);
+    }
+
     constructor(private databaseService: DatabaseService) {}
 
     async addClockTime(clockTime: ClockTime): Promise<ClockTime> {

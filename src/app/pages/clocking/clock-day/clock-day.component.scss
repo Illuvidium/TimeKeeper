@@ -1,0 +1,3 @@
+::ng-deep app-clock-entry:not(:last-child) > div {
+    border-bottom: 1px solid var(--colour-border);
+}

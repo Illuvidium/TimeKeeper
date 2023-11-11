@@ -2,12 +2,16 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    OnDestroy,
     OnInit,
 } from '@angular/core';
 import { ClockTime, Tag, Task } from '../../../../shared/entities';
 import { TagService } from '../../shared/services/tag.service';
 import { TaskService } from '../../shared/services/task.service';
 import { ClockTimeService } from '../../shared/services/clock-time.service';
+import * as moment from 'moment';
+import { ClockTimeDateGroup } from '../../shared/classes/clock-time-date-group';
+import { SubscriptionLike } from 'rxjs';
 
 @Component({
     selector: 'app-clocking',
@@ -15,26 +19,74 @@ import { ClockTimeService } from '../../shared/services/clock-time.service';
     styleUrls: ['./clocking.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ClockingComponent implements OnInit {
+export class ClockingComponent implements OnInit, OnDestroy {
+    private readonly numberOfDaysToLoadAtATime = 14;
+    private clockTimeSavedSubscription: SubscriptionLike;
+    private tickSubscription: SubscriptionLike;
     private lastLoadedMinDate: Date | undefined;
+
     protected tasks: Task[] = [];
     protected tags: Tag[] = [];
     protected clockTimes: ClockTime[] = [];
     protected clockTimeDates: ClockTimeDateGroup[] = [];
+    protected loadingDates = false;
+    protected noMoreDates = false;
 
     constructor(
         private tagService: TagService,
         private taskService: TaskService,
         private clockTimeService: ClockTimeService,
         private cdr: ChangeDetectorRef
-    ) {}
+    ) {
+        this.clockTimeSavedSubscription =
+            this.clockTimeService.clockTimeSaved.subscribe((event) => {
+                const momentDate = moment(event.clockTime.start);
+                let dateGroup = this.clockTimeDates.find((x) =>
+                    moment(x.date).isSame(momentDate, 'day')
+                );
+                if (!dateGroup) {
+                    dateGroup = new ClockTimeDateGroup(
+                        event.clockTime.start,
+                        []
+                    );
+                    this.clockTimeDates.push(dateGroup);
+                    this.clockTimeDates = this.clockTimeDates.orderBy(
+                        (ctd) => new Date(ctd.date).getTime() * -1
+                    );
+                }
+
+                dateGroup.clockTimes = dateGroup.clockTimes.filter(
+                    (ct) => ct.id !== event.clockTime.id
+                );
+                dateGroup.clockTimes.push(event.clockTime);
+                dateGroup.updateStats();
+
+                this.cdr.detectChanges();
+            });
+
+        this.tickSubscription = this.clockTimeService.tick.subscribe(() => {
+            for (const clockTimeDate of this.clockTimeDates.filter((ctd) =>
+                ctd.clockTimes.some((ct) => !ct.finish)
+            )) {
+                clockTimeDate.updateStats();
+            }
+
+            this.cdr.detectChanges();
+        });
+    }
 
     async ngOnInit(): Promise<void> {
         await this.loadMoreDates();
     }
 
+    ngOnDestroy(): void {
+        this.clockTimeSavedSubscription.unsubscribe();
+        this.tickSubscription.unsubscribe();
+    }
+
     protected async loadMoreDates() {
         const maxDate = this.lastLoadedMinDate || new Date();
+        this.loadingDates = true;
 
         if (this.lastLoadedMinDate === undefined) {
             maxDate.setHours(0);
@@ -45,7 +97,7 @@ export class ClockingComponent implements OnInit {
         }
 
         const minDate = new Date(maxDate);
-        minDate.setDate(minDate.getDate() - 14);
+        minDate.setDate(minDate.getDate() - this.numberOfDaysToLoadAtATime);
 
         let entries = await this.clockTimeService.getClockTimesInDateRange(
             minDate,
@@ -55,17 +107,12 @@ export class ClockingComponent implements OnInit {
             (ct) => !this.clockTimes.some((c) => c.id === ct.id)
         );
 
+        this.noMoreDates = entries.length === 0;
+
         // Process new entries and assign them to dates
-        const dateKeyToday = `${new Date().getFullYear()}-${
-            new Date().getMonth() + 1
-        }-${new Date().getDate()}`;
         while (maxDate >= minDate) {
             const limit = new Date(maxDate);
             limit.setDate(limit.getDate() - 1);
-
-            const dateKey = `${limit.getFullYear()}-${
-                limit.getMonth() + 1
-            }-${limit.getDate()}`;
 
             const dayEntries = entries.filter((c) => {
                 const start = new Date(c.start);
@@ -77,17 +124,9 @@ export class ClockingComponent implements OnInit {
             });
 
             if (dayEntries.length) {
-                this.clockTimeDates.push({
-                    date: new Date(limit),
-                    dateKey: dateKey,
-                    clocktimes: dayEntries,
-                    hasActiveClockTime:
-                        dateKeyToday === dateKey &&
-                        dayEntries.some((c) => !c.finish),
-                    isOpen: dateKeyToday === dateKey,
-                    tasks: this.tasks,
-                    tags: this.tags,
-                });
+                this.clockTimeDates.push(
+                    new ClockTimeDateGroup(new Date(limit), dayEntries)
+                );
             }
 
             maxDate.setDate(maxDate.getDate() - 1);
@@ -101,6 +140,7 @@ export class ClockingComponent implements OnInit {
             .filter((id) => !this.tasks.some((t) => t.id === id));
 
         if (!newTaskIds.length) {
+            this.loadingDates = false;
             this.cdr.detectChanges();
             return;
         }
@@ -113,27 +153,15 @@ export class ClockingComponent implements OnInit {
             .filter((id) => !this.tags.some((t) => t.id === id));
 
         if (!newTagIds.length) {
+            this.loadingDates = false;
             this.cdr.detectChanges();
             return;
         }
 
         const newTags = await this.tagService.getTagByIds(newTagIds);
         this.tags = this.tags.concat(newTags);
+        this.loadingDates = false;
 
         this.cdr.detectChanges();
-    }
-}
-
-export class ClockTimeDateGroup {
-    date: Date;
-    dateKey = '';
-    clocktimes: ClockTime[] = [];
-    hasActiveClockTime = false;
-    isOpen = false;
-    tasks: Task[] = [];
-    tags: Tag[] = [];
-
-    constructor() {
-        this.date = new Date();
     }
 }

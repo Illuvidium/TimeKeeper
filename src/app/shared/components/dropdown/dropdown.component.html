@@ -7,6 +7,7 @@
         [style.backgroundColor]="selectedItem?.background"
         [innerText]="selectedItem?.text || placeholder"
         [value]="_selectedValue"
+        [disabled]="!items.length"
         ngbDropdownToggle
     ></button>
     <div class="items" ngbDropdownMenu>

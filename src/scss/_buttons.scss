@@ -12,11 +12,15 @@
     color: var(--colour-active);
     border-color: var(--colour-primary-border);
 
+    &:disabled {
+        filter: grayscale(1);
+    }
+
     &:not(.dropdown-toggle) {
         border-color: var(--colour-primary-border) !important;
     }
 
-    &:not(.dropdown-toggle):hover {
+    &:not(.dropdown-toggle):not(:disabled):hover {
         background-color: var(--colour-primary-hover) !important;
     }
 
