@@ -1,0 +1,34 @@
+.position-relative {
+    .frm-group > .d-flex {
+        input {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            background-color: var(--colour-card);
+            width: 120px;
+        }
+
+        button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+
+            &::before {
+                content: "\f783";
+                font: var(--fa-font-solid);
+            }
+
+            &:hover {
+                background-color: var(--colour-card);
+            }
+        }
+    }
+
+    .position-absolute {
+        top: 2rem;
+
+        > div {
+            max-width: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+    }
+}

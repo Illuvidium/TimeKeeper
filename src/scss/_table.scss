@@ -7,10 +7,20 @@
         }
     }
 
+    tfoot tr td {
+        border-bottom: 0;
+        font-weight: 600;
+    }
+
+    th {
+        font-weight: 600;
+    }
+
     th,
     td {
         background-color: transparent;
         color: var(--colour-text);
         border-color: var(--colour-border);
+        padding: 0.25rem;
     }
 }

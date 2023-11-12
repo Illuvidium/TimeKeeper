@@ -1,78 +1,119 @@
-<p>reports works!</p>
-<ul>
-    <li>Reports per tag</li>
-    <li>Reports per task</li>
-    <li>Table</li>
-    <li>Graph</li>
-    <li>Date range</li>
-</ul>
+<div class="page">
+    <h2>Reports</h2>
+    <ul>
+        <li>Sortable tables</li>
+        <li>Setting for sort order</li>
+    </ul>
 
-<form class="row row-cols-sm-auto">
-    <div class="col-12">
-        <div class="dp-hidden position-absolute">
-            <div class="input-group">
-                <input
-                    name="datepicker"
-                    class="form-control"
-                    ngbDatepicker
-                    #datepicker="ngbDatepicker"
-                    [autoClose]="'outside'"
-                    (dateSelect)="onDateSelection($event)"
-                    [displayMonths]="2"
-                    [dayTemplate]="t"
-                    outsideDays="hidden"
-                    [startDate]="fromDate!"
-                    tabindex="-1"
-                />
-                <ng-template #t let-date let-focused="focused">
-                    <span
-                        class="custom-day"
-                        [class.focused]="focused"
-                        [class.range]="isRange(date)"
-                        [class.faded]="isHovered(date) || isInside(date)"
-                        (mouseenter)="hoveredDate = date"
-                        (mouseleave)="hoveredDate = null"
-                    >
-                        {{ date.day }}
-                    </span>
-                </ng-template>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-category">Date selection</h5>
         </div>
-        <div class="input-group">
-            <input
-                #dpFromDate
-                class="form-control"
-                placeholder="yyyy-mm-dd"
-                name="dpFromDate"
-                [value]="formatter.format(fromDate)"
-                (input)="fromDate = validateInput(fromDate, dpFromDate.value)"
-            />
-            <button
-                class="btn btn-outline-secondary bi bi-calendar3"
-                (click)="datepicker.toggle()"
-                type="button"
-            ></button>
+        <div class="card-body pt-0">
+            <app-date-range-picker
+                [from]="dateFrom"
+                [fromLabel]="'From'"
+                [to]="dateTo"
+                [toLabel]="'To'"
+                (datesChanged)="datesChanged($event)"
+            ></app-date-range-picker>
         </div>
     </div>
-    <div class="col-12">
-        <div class="input-group">
-            <input
-                #dpToDate
-                class="form-control"
-                placeholder="yyyy-mm-dd"
-                name="dpToDate"
-                [value]="formatter.format(toDate)"
-                (input)="toDate = validateInput(toDate, dpToDate.value)"
-            />
-            <button
-                class="btn btn-outline-secondary bi bi-calendar3"
-                (click)="datepicker.toggle()"
-                type="button"
-            ></button>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-category">Report per task</h5>
+        </div>
+        <div class="card-body py-0">
+            <table class="table mt-2">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th class="text-end" width="150">Time spent</th>
+                        <th class="text-end" width="150">Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let report of taskReports">
+                        <td>
+                            <span class="d-flex gap-1">
+                                <span
+                                    class="me-1"
+                                    [innerText]="report.task.name"
+                                ></span>
+                                <app-tag
+                                    *ngFor="let tag of report.tags"
+                                    [small]="true"
+                                    [colour]="tag.colour"
+                                    [text]="tag.name"
+                                ></app-tag>
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <app-time-stamp
+                                [milliseconds]="report.totalMilliseconds"
+                            ></app-time-stamp>
+                        </td>
+                        <td class="text-end">{{ report.percentage }} %</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total</td>
+                        <td class="text-end">
+                            <app-time-stamp
+                                [milliseconds]="totalMs"
+                            ></app-time-stamp>
+                        </td>
+                        <td class="text-end">100 %</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
-</form>
 
-<hr />
-<pre>From date model: {{ fromDate | json }}</pre>
-<pre>To date model: {{ toDate | json }}</pre>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-category">Report per tag</h5>
+        </div>
+        <div class="card-body py-0">
+            <table class="table mt-2">
+                <thead>
+                    <tr>
+                        <th>Tag</th>
+                        <th class="text-end" width="150">Time spent</th>
+                        <th class="text-end" width="150">Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let report of tagReports">
+                        <td>
+                            <app-tag
+                                [small]="true"
+                                [colour]="report.tag.colour"
+                                [text]="report.tag.name"
+                            ></app-tag>
+                        </td>
+                        <td class="text-end">
+                            <app-time-stamp
+                                [milliseconds]="report.totalMilliseconds"
+                            ></app-time-stamp>
+                        </td>
+                        <td class="text-end">{{ report.percentage }} %</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total</td>
+                        <td class="text-end">
+                            <app-time-stamp
+                                [milliseconds]="totalMs"
+                            ></app-time-stamp>
+                        </td>
+                        <td class="text-end">100 %</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

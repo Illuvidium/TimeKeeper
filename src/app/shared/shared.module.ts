@@ -15,6 +15,7 @@ import { TagSelectComponent } from './components/tag-select/tag-select.component
 import { StopwatchComponent } from './components/stopwatch/stopwatch.component';
 import { ClockBarComponent } from './components/clock-bar/clock-bar.component';
 import { TimeStampComponent } from './components/time-stamp/time-stamp.component';
+import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
 
 @NgModule({
     declarations: [
@@ -29,6 +30,7 @@ import { TimeStampComponent } from './components/time-stamp/time-stamp.component
         StopwatchComponent,
         ClockBarComponent,
         TimeStampComponent,
+        DateRangePickerComponent,
     ],
     imports: [CommonModule, TranslateModule, FormsModule, NgbModule],
     exports: [
@@ -45,6 +47,7 @@ import { TimeStampComponent } from './components/time-stamp/time-stamp.component
         StopwatchComponent,
         ClockBarComponent,
         TimeStampComponent,
+        DateRangePickerComponent,
     ],
 })
 export class SharedModule {}
