@@ -43,7 +43,13 @@
             "customWebpackConfig": {
               "path": "./angular.webpack.js",
               "replaceDuplicatePlugins": true
-            }
+            },
+            "allowedCommonJsDependencies": [
+              "rxjs",
+              "rxjs/operators",
+              "moment",
+              "uuid"
+            ]
           },
           "configurations": {
             "dev": {
@@ -135,7 +141,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular-electron:build"
+            "buildTarget": "angular-electron:build"
           }
         },
         "test": {
