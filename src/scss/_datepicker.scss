@@ -1,38 +1,41 @@
 body {
-    .ngb-dp-header,
-    .ngb-dp-month-name,
-    .ngb-dp-weekdays {
-        background-color: var(--colour-title-bar);
-    }
+	.ngb-dp-header,
+	.ngb-dp-month-name,
+	.ngb-dp-weekdays {
+		background-color: var(--colour-title-bar);
+	}
 
-    .custom-day {
-        text-align: center;
-        padding: 0.185rem 0.25rem;
-        display: inline-block;
-        height: 2rem;
-        width: 2rem;
-    }
-    .custom-day.faded,
-    .custom-day.range.faded {
-        background-color: var(--colour-primary-border);
-    }
+	.custom-day {
+		text-align: center;
+		padding: 0.185rem 0.25rem;
+		display: inline-block;
+		height: 2rem;
+		width: 2rem;
+	}
+	.custom-day.faded,
+	.custom-day.range.faded {
+		background-color: var(--colour-primary-border);
+	}
 
-    .custom-day.range,
-    .custom-day:hover {
-        background-color: var(--colour-primary);
+	.custom-day.range,
+	.custom-day:hover {
+		background-color: var(--colour-primary);
 
-        color: #fff;
-    }
+		color: #fff;
+	}
 
-    ngb-datepicker.dropdown-menu {
-        background-color: var(--colour-card);
-    }
+	ngb-datepicker.dropdown-menu {
+		background-color: var(--colour-card);
+		box-shadow: var(--colour-box-shadow) 0px 0px 4px 0px;
+		border: 1px solid var(--colour-title-bar);
+	}
 
-    ngb-datepicker .form-select {
-        background-color: var(--colour-card);
-    }
+	ngb-datepicker .form-select {
+		background-color: var(--colour-card);
+		color: var(--color-text);
+	}
 
-    .ngb-dp-weekday {
-        color: var(--colour-highlight);
-    }
+	.ngb-dp-weekday {
+		color: var(--colour-highlight);
+	}
 }

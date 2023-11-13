@@ -1,0 +1,47 @@
+<div class="card">
+	<div class="card-header">
+		<h5 class="card-category d-flex">
+			<span class="flex-grow-1">Report per tag</span>
+			<div class="d-flex align-items-center gap-2">
+				<app-dropdown
+					[ghost]="true"
+					[items]="sortOrderOptions"
+					[selectedValue]="sortOrder"
+					(selectedValueChanged)="sortOrderChanged($event)"></app-dropdown>
+			</div>
+		</h5>
+	</div>
+	<div class="card-body py-0">
+		<table class="table mt-2">
+			<thead>
+				<tr>
+					<th>Tag</th>
+					<th class="text-end" width="150">Time spent</th>
+					<th class="text-end" width="150">Percentage</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for(report of tagReports; track report){
+				<tr>
+					<td>
+						<app-tag [small]="true" [colour]="report.tag.colour" [text]="report.tag.name"></app-tag>
+					</td>
+					<td class="text-end">
+						<app-time-stamp [milliseconds]="report.totalMilliseconds"></app-time-stamp>
+					</td>
+					<td class="text-end">{{ report.percentage }} %</td>
+				</tr>
+				}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>Total</td>
+					<td class="text-end">
+						<app-time-stamp [milliseconds]="totalMs"></app-time-stamp>
+					</td>
+					<td class="text-end">100 %</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
