@@ -1,56 +1,43 @@
 <div class="page">
-    <h2>Clocking</h2>
+	<h2>Clocking</h2>
 
-    <ul>
-        <li>Edit times</li>
-        <li>Overlapping indicator</li>
-        <li>Comments per entry</li>
-    </ul>
+	<ul>
+		<li>Edit times</li>
+		<li>Overlapping indicator</li>
+		<li>Comments per entry</li>
+	</ul>
 
-    <div *ngIf="clockTimeDates.length" ngbAccordion>
-        <div
-            ngbAccordionItem
-            *ngFor="let clockTimeDate of clockTimeDates"
-            [collapsed]="!clockTimeDate.isOpen"
-        >
-            <h2 ngbAccordionHeader>
-                <button ngbAccordionButton>
-                    <span class="d-flex gap-2">
-                        <span class="flex-grow-1">
-                            {{ clockTimeDate.formattedDate }}</span
-                        >
+	@if(clockTimeDates.length){
+	<div ngbAccordion>
+		@for(clockTimeDate of clockTimeDates; track clockTimeDate){
+		<div ngbAccordionItem [collapsed]="!clockTimeDate.isOpen">
+			<h2 ngbAccordionHeader>
+				<button ngbAccordionButton>
+					<span class="d-flex gap-2">
+						<span class="flex-grow-1"> {{ clockTimeDate.formattedDate }}</span>
 
-                        <span [class.mx-2]="clockTimeDate.isRunning">
-                            <app-time-stamp
-                                [milliseconds]="clockTimeDate.totalElapsedMs"
-                            ></app-time-stamp>
-                        </span>
-                        <span *ngIf="clockTimeDate.isRunning">
-                            <app-stopwatch></app-stopwatch>
-                        </span>
-                    </span>
-                </button>
-            </h2>
-            <div ngbAccordionCollapse>
-                <div class="p-0" ngbAccordionBody>
-                    <app-clock-day
-                        [clockTimeDateGroup]="clockTimeDate"
-                        [tasks]="tasks"
-                        [tags]="tags"
-                    ></app-clock-day>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="frm-group" *ngIf="!noMoreDates">
-        <button
-            type="button"
-            class="frm-control button-primary w-100"
-            [disabled]="loadingDates"
-            (click)="loadMoreDates()"
-        >
-            Load more dates
-        </button>
-    </div>
+						<span [class.mx-2]="clockTimeDate.isRunning">
+							<app-time-stamp [milliseconds]="clockTimeDate.totalElapsedMs"></app-time-stamp>
+						</span>
+						@if(clockTimeDate.isRunning){
+						<span>
+							<app-stopwatch></app-stopwatch>
+						</span>
+						}
+					</span>
+				</button>
+			</h2>
+			<div ngbAccordionCollapse>
+				<div class="p-0" ngbAccordionBody>
+					<app-clock-day [clockTimeDateGroup]="clockTimeDate" [tasks]="tasks" [tags]="tags"></app-clock-day>
+				</div>
+			</div>
+		</div>
+		}
+	</div>
+	} @if(!noMoreDates){
+	<div class="frm-group">
+		<button type="button" class="frm-control button-primary w-100" [disabled]="loadingDates" (click)="loadMoreDates()">Load more dates</button>
+	</div>
+	}
 </div>

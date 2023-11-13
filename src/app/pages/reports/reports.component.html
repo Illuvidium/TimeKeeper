@@ -1,120 +1,105 @@
 <div class="page">
-    <h2>Reports</h2>
-    <ul>
-        <li>Sortable tables</li>
-        <li>Setting for sort order</li>
-        <li>Buttons last 7 / 30 days</li>
-    </ul>
+	<h2>Reports</h2>
+	<ul>
+		<li>Sortable tables</li>
+		<li>Setting for sort order</li>
+		<li>Buttons last 7 / 30 days</li>
+	</ul>
 
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-category">Date selection</h5>
-        </div>
-        <div class="card-body pt-0">
-            <app-date-range-picker
-                [from]="dateFrom"
-                [fromLabel]="'From'"
-                [to]="dateTo"
-                [toLabel]="'To'"
-                (datesChanged)="datesChanged($event)"
-            ></app-date-range-picker>
-        </div>
-    </div>
+	<div class="card">
+		<div class="card-header">
+			<h5 class="card-category">Date selection</h5>
+		</div>
+		<div class="card-body pt-0">
+			<app-date-range-picker
+				[from]="dateFrom"
+				[fromLabel]="'From'"
+				[to]="dateTo"
+				[toLabel]="'To'"
+				(datesChanged)="datesChanged($event)"></app-date-range-picker>
+		</div>
+	</div>
 
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-category">Report per task</h5>
-        </div>
-        <div class="card-body py-0">
-            <table class="table mt-2">
-                <thead>
-                    <tr>
-                        <th>Task</th>
-                        <th class="text-end" width="150">Time spent</th>
-                        <th class="text-end" width="150">Percentage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let report of taskReports">
-                        <td>
-                            <span class="d-flex gap-1">
-                                <span
-                                    class="me-1"
-                                    [innerText]="report.task.name"
-                                ></span>
-                                <app-tag
-                                    *ngFor="let tag of report.tags"
-                                    [small]="true"
-                                    [colour]="tag.colour"
-                                    [text]="tag.name"
-                                ></app-tag>
-                            </span>
-                        </td>
-                        <td class="text-end">
-                            <app-time-stamp
-                                [milliseconds]="report.totalMilliseconds"
-                            ></app-time-stamp>
-                        </td>
-                        <td class="text-end">{{ report.percentage }} %</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Total</td>
-                        <td class="text-end">
-                            <app-time-stamp
-                                [milliseconds]="totalMs"
-                            ></app-time-stamp>
-                        </td>
-                        <td class="text-end">100 %</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
+	<div class="card">
+		<div class="card-header">
+			<h5 class="card-category">Report per task</h5>
+		</div>
+		<div class="card-body py-0">
+			<table class="table mt-2">
+				<thead>
+					<tr>
+						<th>Task</th>
+						<th class="text-end" width="150">Time spent</th>
+						<th class="text-end" width="150">Percentage</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for(report of taskReports; track report){
+					<tr>
+						<td>
+							<span class="d-flex gap-1">
+								<span class="me-1" [innerText]="report.task.name"></span>
+								@for( tag of report.tags; track tag){
+								<app-tag [small]="true" [colour]="tag.colour" [text]="tag.name"></app-tag>
+								}
+							</span>
+						</td>
+						<td class="text-end">
+							<app-time-stamp [milliseconds]="report.totalMilliseconds"></app-time-stamp>
+						</td>
+						<td class="text-end">{{ report.percentage }} %</td>
+					</tr>
+					}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td>Total</td>
+						<td class="text-end">
+							<app-time-stamp [milliseconds]="totalMs"></app-time-stamp>
+						</td>
+						<td class="text-end">100 %</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
 
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-category">Report per tag</h5>
-        </div>
-        <div class="card-body py-0">
-            <table class="table mt-2">
-                <thead>
-                    <tr>
-                        <th>Tag</th>
-                        <th class="text-end" width="150">Time spent</th>
-                        <th class="text-end" width="150">Percentage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let report of tagReports">
-                        <td>
-                            <app-tag
-                                [small]="true"
-                                [colour]="report.tag.colour"
-                                [text]="report.tag.name"
-                            ></app-tag>
-                        </td>
-                        <td class="text-end">
-                            <app-time-stamp
-                                [milliseconds]="report.totalMilliseconds"
-                            ></app-time-stamp>
-                        </td>
-                        <td class="text-end">{{ report.percentage }} %</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Total</td>
-                        <td class="text-end">
-                            <app-time-stamp
-                                [milliseconds]="totalMs"
-                            ></app-time-stamp>
-                        </td>
-                        <td class="text-end">100 %</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
+	<div class="card">
+		<div class="card-header">
+			<h5 class="card-category">Report per tag</h5>
+		</div>
+		<div class="card-body py-0">
+			<table class="table mt-2">
+				<thead>
+					<tr>
+						<th>Tag</th>
+						<th class="text-end" width="150">Time spent</th>
+						<th class="text-end" width="150">Percentage</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for(report of tagReports; track report){
+					<tr>
+						<td>
+							<app-tag [small]="true" [colour]="report.tag.colour" [text]="report.tag.name"></app-tag>
+						</td>
+						<td class="text-end">
+							<app-time-stamp [milliseconds]="report.totalMilliseconds"></app-time-stamp>
+						</td>
+						<td class="text-end">{{ report.percentage }} %</td>
+					</tr>
+					}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td>Total</td>
+						<td class="text-end">
+							<app-time-stamp [milliseconds]="totalMs"></app-time-stamp>
+						</td>
+						<td class="text-end">100 %</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
 </div>

@@ -1,25 +1,19 @@
 <div class="d-flex align-items-center" [class.gap-2]="selectedTags.length">
-    <div class="d-flex flex-wrap gap-2">
-        <app-tag
-            *ngFor="let tag of selectedTags"
-            [colour]="tag.colour"
-            [text]="tag.name"
-            [deletable]="true"
-            (click)="deselect(tag)"
-        ></app-tag>
-    </div>
-    <div ngbDropdown>
-        <button class="frm-control button-ghost mx-0" ngbDropdownToggle>
-            <i class="fa-solid fa-plus"></i>
-        </button>
-        <div class="items" ngbDropdownMenu>
-            <div
-                ngbDropdownItem
-                *ngFor="let tag of availableTags"
-                (click)="select(tag)"
-            >
-                <app-tag [colour]="tag.colour" [text]="tag.name"></app-tag>
-            </div>
-        </div>
-    </div>
+	<div class="d-flex flex-wrap gap-2">
+		@for(tag of selectedTags; track tag){
+		<app-tag [colour]="tag.colour" [text]="tag.name" [deletable]="true" (click)="deselect(tag)"></app-tag>
+		}
+	</div>
+	<div ngbDropdown>
+		<button class="frm-control button-ghost mx-0" ngbDropdownToggle>
+			<i class="fa-solid fa-plus"></i>
+		</button>
+		<div class="items" ngbDropdownMenu>
+			@for(tag of availableTags; track tag){
+			<div ngbDropdownItem (click)="select(tag)">
+				<app-tag [colour]="tag.colour" [text]="tag.name"></app-tag>
+			</div>
+			}
+		</div>
+	</div>
 </div>

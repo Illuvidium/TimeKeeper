@@ -1,26 +1,20 @@
-<div *ngIf="clockTime" class="px-3 py-1 d-flex gap-2 clock-time">
-    <span class="d-flex gap-2 flex-grow-1">
-        <span class="times" [innerText]="startFinish"></span>
-        <span [innerText]="taskDescription"></span>
-        <app-tag
-            *ngFor="let tag of activeTags"
-            [colour]="tag.colour"
-            [small]="true"
-            [text]="tag.name"
-        ></app-tag>
-    </span>
+@if(clockTime){
+<div class="px-3 py-1 d-flex gap-2 clock-time">
+	<span class="d-flex gap-2 flex-grow-1">
+		<span class="times" [innerText]="startFinish"></span>
+		<span [innerText]="taskDescription"></span>
+		@for(tag of activeTags; track tag){
+		<app-tag [colour]="tag.colour" [small]="true" [text]="tag.name"></app-tag>
+		}
+	</span>
 
-    <span class="time-elapsed">
-        <app-time-stamp [milliseconds]="timeElapsedMs"></app-time-stamp>
-    </span>
-    <span style="width: 28px">
-        <button
-            type="button"
-            class="button-ghost"
-            placement="top"
-            [ngbTooltip]="'Edit'"
-        >
-            <i class="fa-solid fa-pencil"></i>
-        </button>
-    </span>
+	<span class="time-elapsed">
+		<app-time-stamp [milliseconds]="timeElapsedMs"></app-time-stamp>
+	</span>
+	<span style="width: 28px">
+		<button type="button" class="button-ghost" placement="top" [ngbTooltip]="'Edit'">
+			<i class="fa-solid fa-pencil"></i>
+		</button>
+	</span>
 </div>
+}

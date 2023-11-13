@@ -1,5 +1,9 @@
-<div *ngIf="!formGroup?.valid && formGroup?.submitAttempted">
-    <div *ngFor="let errorMessage of formGroup?.errorMessages">
-        {{ errorMessage }}
-    </div>
+@if(!formGroup?.valid && formGroup?.submitAttempted){
+<div>
+	@for(errorMessage of formGroup?.errorMessages; track errorMessage){
+	<div>
+		{{ errorMessage }}
+	</div>
+	}
 </div>
+}
