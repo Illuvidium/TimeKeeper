@@ -1,11 +1,6 @@
 <div class="page">
 	<h2>Clocking</h2>
 
-	<ul>
-		<li>Overlapping indicator</li>
-		<li>Validate finish after start</li>
-	</ul>
-
 	@if(clockTimeDates.length){
 	<div ngbAccordion>
 		@for(clockTimeDate of clockTimeDates; track clockTimeDate){
@@ -13,7 +8,12 @@
 			<h2 ngbAccordionHeader>
 				<button ngbAccordionButton>
 					<span class="d-flex gap-2">
-						<span class="flex-grow-1"> {{ clockTimeDate.formattedDate }}</span>
+						<span class="flex-grow-1">
+							{{ clockTimeDate.formattedDate }}
+							@if(clockTimeDate.hasOverlap){
+							<i class="fa-solid fa-triangle-exclamation warning ms-1" placement="top" [ngbTooltip]="'Has overlapping entries'"></i>
+							}
+						</span>
 
 						<span [class.mx-2]="clockTimeDate.isRunning">
 							<app-time-stamp [milliseconds]="clockTimeDate.totalElapsedMs"></app-time-stamp>

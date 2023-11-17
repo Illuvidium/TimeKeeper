@@ -15,6 +15,7 @@ export class ClockEntryComponent implements OnInit, OnDestroy {
 	@Input() tags: Tag[] = [];
 	@Input() tasks: Task[] = [];
 	@Input() clockTime: ClockTime | undefined;
+	@Input() overlaps = false;
 
 	private tickSubscription: SubscriptionLike;
 	protected taskDescription = '';
@@ -45,7 +46,6 @@ export class ClockEntryComponent implements OnInit, OnDestroy {
 
 	setTimeData(): void {
 		this.startFinish = getStartFinishTimeString(this.clockTime as ClockTime, this.date as Date);
-
 		this.timeElapsedMs = calculateElapsedForDate(this.clockTime as ClockTime, this.date as Date);
 	}
 
@@ -55,6 +55,7 @@ export class ClockEntryComponent implements OnInit, OnDestroy {
 
 	async save(clockTime: ClockTime) {
 		await this.clockTimeService.updateClockTime(clockTime);
+		this.setTimeData();
 		this.editMode = false;
 		this.cdr.detectChanges();
 	}

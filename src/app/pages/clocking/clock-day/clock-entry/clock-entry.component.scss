@@ -9,6 +9,10 @@
 		text-align: justify;
 		height: 1rem;
 
+		&.warning {
+			opacity: 1;
+		}
+
 		&:after {
 			content: '';
 			height: 0;
@@ -26,4 +30,10 @@
 	margin-left: calc(68px + 0.5rem);
 	font-size: 0.8rem;
 	font-style: italic;
+}
+
+i.fa-triangle-exclamation {
+	color: var(--colour-warning);
+	position: relative;
+	top: 3px;
 }

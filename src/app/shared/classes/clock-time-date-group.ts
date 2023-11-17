@@ -6,10 +6,18 @@ export class ClockTimeDateGroup {
 
 	date: Date;
 	clockTimes: ClockTime[] = [];
+	clockTimesWithOverlap: ClockTime[] = [];
 	isRunning = false;
 	isOpen = false;
 	totalElapsedMs = 0;
 	formattedDate = '';
+	get hasOverlap(): boolean {
+		return this.clockTimesWithOverlap.length > 0;
+	}
+
+	get orderedClockTimes(): ClockTime[] {
+		return this.clockTimes.orderBy(ct => new Date(ct.start));
+	}
 
 	constructor(date: Date, clockTimes: ClockTime[]) {
 		this.date = date;
@@ -30,6 +38,33 @@ export class ClockTimeDateGroup {
 			.map(ct => calculateElapsedMs(ct, minTime, maxTime))
 			.reduce((sum: number, current: number) => sum + current, 0);
 		this.formattedDate = this.momentDate.format('dddd D MMM YYYY');
+
+		this.clockTimesWithOverlap = [];
+		for (const clockTime of this.clockTimes) {
+			if (this.clockTimeOverlaps(clockTime)) {
+				this.clockTimesWithOverlap.push(clockTime);
+			}
+		}
+	}
+
+	private clockTimeOverlaps(clockTime: ClockTime): boolean {
+		for (const clockTimeOther of this.clockTimes.filter(ct => ct.id !== clockTime.id)) {
+			const startDateOne = new Date(clockTime.start);
+			const finishDateOne = clockTime.finish ? new Date(clockTime.finish) : new Date();
+			const startDateTwo = new Date(clockTimeOther.start);
+			const finishDateTow = clockTimeOther.finish ? new Date(clockTimeOther.finish) : new Date();
+
+			if (startDateOne > finishDateTow || startDateTwo > finishDateOne) {
+				continue;
+			}
+
+			const overlapStart = startDateOne > startDateTwo ? startDateOne : startDateTwo;
+			const overlapEnd = finishDateOne < finishDateTow ? finishDateOne : finishDateTow;
+			const overlapSeconds = (overlapEnd.getTime() - overlapStart.getTime()) / 1000;
+			if (overlapSeconds > 59) return true;
+		}
+
+		return false;
 	}
 }
 

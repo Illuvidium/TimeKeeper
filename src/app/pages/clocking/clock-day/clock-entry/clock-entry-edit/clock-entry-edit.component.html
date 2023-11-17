@@ -54,7 +54,10 @@
 
 		<div class="flex-grow-1 d-flex flex-column frm-group">
 			<label>Comments</label>
-			<textarea class="frm-control" [formControlDirective]="clockEntryForm.controls.comments"></textarea>
+			<textarea
+				class="frm-control"
+				[value]="clockEntryForm.controls.comments.value"
+				[formControlDirective]="clockEntryForm.controls.comments"></textarea>
 		</div>
 	</div>
 

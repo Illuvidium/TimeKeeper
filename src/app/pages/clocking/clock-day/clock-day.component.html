@@ -1,7 +1,12 @@
 @if(!!clockTimeDateGroup){
 <div>
-	@for(clockTime of clockTimeDateGroup.clockTimes; track clockTime) {
-	<app-clock-entry [date]="clockTimeDateGroup.date" [tasks]="tasks" [tags]="tags" [clockTime]="clockTime"></app-clock-entry>
+	@for(clockTime of clockTimeDateGroup.orderedClockTimes; track clockTime) {
+	<app-clock-entry
+		[date]="clockTimeDateGroup.date"
+		[tasks]="tasks"
+		[tags]="tags"
+		[clockTime]="clockTime"
+		[overlaps]="clockTimeDateGroup.clockTimesWithOverlap.includes(clockTime)"></app-clock-entry>
 	}
 </div>
 }

@@ -5,7 +5,10 @@
 		<app-clock-entry-edit [tags]="tags" [tasks]="tasks" [clockTime]="clockTime" (cancel)="cancel()" (save)="save($event)"></app-clock-entry-edit>
 		} @else {
 		<span class="d-flex gap-2 flex-grow-1">
-			<span class="times" [innerText]="startFinish"></span>
+			<span class="times" [class.warning]="overlaps" [innerText]="startFinish"></span>
+			@if(overlaps){
+			<i class="fa-solid fa-triangle-exclamation" placement="top" [ngbTooltip]="'Overlaps with another entry'"></i>
+			}
 			<span [innerText]="taskDescription"></span>
 			@for(tag of activeTags; track tag){
 			<app-tag [colour]="tag.colour" [small]="true" [text]="tag.name"></app-tag>

@@ -3,12 +3,12 @@ import { ClockTimeDateGroup } from '../../../shared/classes/clock-time-date-grou
 import { Tag, Task } from '../../../../../shared/entities';
 
 @Component({
-    selector: 'app-clock-day',
-    templateUrl: './clock-day.component.html',
-    styleUrls: ['./clock-day.component.scss'],
+	selector: 'app-clock-day',
+	templateUrl: './clock-day.component.html',
+	styleUrls: ['./clock-day.component.scss'],
 })
 export class ClockDayComponent {
-    @Input() clockTimeDateGroup: ClockTimeDateGroup | undefined;
-    @Input() tags: Tag[] = [];
-    @Input() tasks: Task[] = [];
+	@Input() clockTimeDateGroup: ClockTimeDateGroup | undefined;
+	@Input() tags: Tag[] = [];
+	@Input() tasks: Task[] = [];
 }
