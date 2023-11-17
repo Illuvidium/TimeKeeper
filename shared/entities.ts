@@ -26,6 +26,7 @@ export interface ClockTime {
 	start: Date;
 	finish: Date | undefined;
 	active: boolean;
+	comments: string;
 }
 
 export interface Setting {

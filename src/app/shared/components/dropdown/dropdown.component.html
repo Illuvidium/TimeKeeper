@@ -5,10 +5,16 @@
 		[class.button-ghost]="ghost"
 		[style.color]="selectedItem?.foreground"
 		[style.backgroundColor]="selectedItem?.background"
-		[innerText]="selectedItem?.text || placeholder"
 		[value]="_selectedValue"
 		[disabled]="!items.length"
-		ngbDropdownToggle></button>
+		ngbDropdownToggle>
+		<span class="d-flex gap-1">
+			<span class="flex-grow-1" [innerText]="selectedItem?.text || placeholder"></span>
+			@for(tag of selectedItem?.tags ?? []; track tag){
+			<app-tag [colour]="tag.colour" [small]="true" [text]="tag.name"></app-tag>
+			}
+		</span>
+	</button>
 	<div class="items" ngbDropdownMenu>
 		@for(item of items; track item){
 		<button ngbDropdownItem class="d-flex gap-1" [style.color]="item.foreground" [style.backgroundColor]="item.background" (click)="select(item)">

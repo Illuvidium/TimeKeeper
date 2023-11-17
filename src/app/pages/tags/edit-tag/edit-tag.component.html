@@ -1,13 +1,13 @@
 <div class="d-flex gap-2">
 	<div class="frm-group">
 		<label for="newTagText">Text</label>
-		<input id="newTagText" placeholder="Text" type="text" [formControlDirective]="tagForm.controls.Text" (keyup.enter)="saveTag()" />
+		<input id="newTagText" placeholder="Text" type="text" [formControlDirective]="tagForm.controls.text" (keyup.enter)="saveTag()" />
 	</div>
 	<div class="frm-group">
 		<label>Colour</label>
 		<app-colour-dropdown
-			[value]="tagForm.controls.Colour.value"
-			[formControlDirective]="tagForm.controls.Colour"
+			[value]="tagForm.controls.colour.value"
+			[formControlDirective]="tagForm.controls.colour"
 			(resetValue)="ddl.select($event)"
 			#ddl></app-colour-dropdown>
 	</div>

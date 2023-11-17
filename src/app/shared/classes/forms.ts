@@ -1,3 +1,5 @@
+import { NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
+
 export class FormGroup {
 	controls: any = {};
 	submitAttempted = false;
@@ -30,20 +32,24 @@ export class FormGroup {
 	get errorMessages(): string[] {
 		return Object.entries(this.controls as object)
 			.filter(([, value]) => value instanceof FormControl)
-			.map(([key, value]) => (value as FormControl).errorMessages.map(msg => msg.replace('[NAME]', key)))
+			.map(([, value]) => {
+				const control = value as FormControl<any>;
+				return control.errorMessages.map(msg => msg.replace('[NAME]', control.name));
+			})
 			.reduce((a, b) => [...a, ...b]);
 	}
 
-	private getControls(): FormControl[] {
+	private getControls(): FormControl<any>[] {
 		return Object.entries(this.controls as object)
 			.filter(([, value]) => value instanceof FormControl)
-			.map(([, value]) => value as FormControl);
+			.map(([, value]) => value as FormControl<any>);
 	}
 }
 
-export class FormControl {
-	initialValue: any;
-	value: any;
+export class FormControl<T> {
+	name = '';
+	initialValue: T;
+	value: T;
 	validators: FormControlValidator[] = [];
 	submitAttempted = false;
 
@@ -63,32 +69,69 @@ export class FormControl {
 		return this.validators.filter((v: FormControlValidator) => !v.validate(this)).map((v: FormControlValidator) => v.validationMessage);
 	}
 
-	constructor(value: any, validators: FormControlValidator[] = []) {
+	constructor(value: any, name: string = '', validators: FormControlValidator[] = []) {
+		this.name = name;
 		this.initialValue = Array.isArray(value) ? [...value] : typeof value === 'object' ? Object.assign({}, value) : value;
 		this.value = value;
 		this.validators = validators;
 	}
 
 	reset() {
-		this.value = Array.isArray(this.initialValue)
-			? [...this.initialValue]
-			: typeof this.initialValue === 'object'
-			? Object.assign({}, this.initialValue)
-			: this.initialValue;
+		if (Array.isArray(this.initialValue)) {
+			this.value = [...this.initialValue] as T;
+			this.submitAttempted = false;
+			return;
+		}
+
+		if (typeof this.initialValue === 'object') {
+			this.value = Object.assign({}, this.initialValue);
+			this.submitAttempted = false;
+			return;
+		}
+
+		this.value = this.initialValue;
 		this.submitAttempted = false;
 	}
 }
 
 export class FormControlValidator {
-	validate: (formControl: FormControl) => boolean;
+	validate: (formControl: FormControl<any>) => boolean;
 	validationMessage: string;
-	constructor(validate: (formControl: FormControl) => boolean, errorMessage = '') {
+	constructor(validate: (formControl: FormControl<any>) => boolean, errorMessage = '') {
 		this.validate = validate;
 		this.validationMessage = errorMessage || '[NAME] is invalid';
 	}
 }
 
 export class RequiredValidator implements FormControlValidator {
-	validate: (formControl: FormControl) => boolean = (formControl: FormControl) => !!formControl.value;
+	validate: (formControl: FormControl<any>) => boolean = (formControl: FormControl<any>) => !!formControl.value;
 	validationMessage = '[NAME] is required';
+}
+
+export class DateNonFutureValidator implements FormControlValidator {
+	validate: (formControl: FormControl<NgbDateStruct>) => boolean = (formControl: FormControl<NgbDateStruct>) => {
+		const dateModel: NgbDateStruct = formControl.value;
+		const now = new Date();
+		const date = new Date(dateModel.year, dateModel.month - 1, dateModel.day, now.getHours(), now.getMinutes(), now.getSeconds());
+		return date <= now;
+	};
+	validationMessage = '[NAME] cannot be in the future';
+
+	constructor() {}
+}
+
+export class TimeNonFutureValidator implements FormControlValidator {
+	validate: (formControl: FormControl<NgbTimeStruct>) => boolean = (formControl: FormControl<NgbTimeStruct>) => {
+		const dateModel: NgbDateStruct = this.formControlDate.value;
+		const timeModel: NgbTimeStruct = formControl.value;
+		const date = new Date(dateModel.year, dateModel.month - 1, dateModel.day, timeModel.hour, timeModel.minute, timeModel.second);
+		return date <= new Date();
+	};
+	validationMessage = '[NAME] cannot be in the future';
+
+	formControlDate: FormControl<NgbDateStruct>;
+
+	constructor(formControlDate: FormControl<NgbDateStruct>) {
+		this.formControlDate = formControlDate;
+	}
 }

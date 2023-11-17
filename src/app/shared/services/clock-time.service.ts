@@ -38,9 +38,9 @@ export class ClockTimeService {
 		return clockTime;
 	}
 
-	async getAllClockTimes(): Promise<ClockTime[]> {
-		return await this.databaseService.getClockTimesByFilter(() => true);
-	}
+	// async getAllClockTimes(): Promise<ClockTime[]> {
+	// 	return await this.databaseService.getClockTimesByFilter(() => true);
+	// }
 
 	async getClockTimesInDateRange(minDate: Date, maxDate: Date): Promise<ClockTime[]> {
 		return await this.databaseService.getClockTimesByFilter(c => {

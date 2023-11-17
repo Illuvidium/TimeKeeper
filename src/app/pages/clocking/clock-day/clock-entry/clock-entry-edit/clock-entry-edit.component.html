@@ -1,0 +1,71 @@
+<div class="d-flex flex-column gap-3 my-2">
+	<div class="frm-group w-100">
+		<label>Task</label>
+		<app-dropdown
+			id="selectedTask"
+			[items]="taskOptions"
+			[selectedValue]="clockEntryForm.controls.task.value"
+			[formControlDirective]="clockEntryForm.controls.task"
+			[ghost]="true" />
+	</div>
+
+	<div class="d-flex gap-5">
+		<div class="d-flex flex-column">
+			<label>Start</label>
+			<div class="input-group datepicker frm-group mb-0">
+				<input
+					class="frm-control"
+					placeholder="yyyy-mm-dd"
+					[(ngModel)]="clockEntryForm.controls.startDate.value"
+					[formControlDirective]="clockEntryForm.controls.startDate"
+					ngbDatepicker
+					(dateSelect)="validationService.triggerValidation()"
+					#ds="ngbDatepicker" />
+				<button class="btn btn-outline-secondary bi bi-calendar3" (click)="ds.toggle()" type="button"></button>
+			</div>
+			<div class="frm-validate">
+				<ngb-timepicker
+					[(ngModel)]="clockEntryForm.controls.startTime.value"
+					[formControlDirective]="clockEntryForm.controls.startTime"></ngb-timepicker>
+			</div>
+		</div>
+
+		@if(showFinish){
+		<div class="d-flex flex-column">
+			<label>Finish</label>
+			<div class="input-group datepicker frm-group mb-0">
+				<input
+					class="frm-control"
+					placeholder="yyyy-mm-dd"
+					[(ngModel)]="clockEntryForm.controls.finishDate.value"
+					[formControlDirective]="clockEntryForm.controls.finishDate"
+					ngbDatepicker
+					(dateSelect)="validationService.triggerValidation()"
+					#df="ngbDatepicker" />
+				<button class="btn btn-outline-secondary bi bi-calendar3" (click)="df.toggle()" type="button"></button>
+			</div>
+			<div class="frm-validate">
+				<ngb-timepicker
+					[(ngModel)]="clockEntryForm.controls.finishTime.value"
+					[formControlDirective]="clockEntryForm.controls.finishTime"></ngb-timepicker>
+			</div>
+		</div>
+		}
+
+		<div class="flex-grow-1 d-flex flex-column frm-group">
+			<label>Comments</label>
+			<textarea class="frm-control" [formControlDirective]="clockEntryForm.controls.comments"></textarea>
+		</div>
+	</div>
+
+	<app-validation-summary [formGroup]="clockEntryForm"></app-validation-summary>
+
+	<div class="d-flex align-items-end justify-content-end gap-2">
+		<div class="frm-group">
+			<button type="button" class="frm-control button-secondary" (click)="cancelEdit()">Cancel</button>
+		</div>
+		<div class="frm-group">
+			<button type="button" class="frm-control button-primary" (click)="saveEdit()">Save</button>
+		</div>
+	</div>
+</div>

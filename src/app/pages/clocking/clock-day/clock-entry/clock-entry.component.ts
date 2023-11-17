@@ -1,16 +1,6 @@
-import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	Input,
-	OnDestroy,
-	OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ClockTime, Tag, Task } from '../../../../../../shared/entities';
-import {
-	calculateElapsedForDate,
-	getStartFinishTimeString,
-} from '../../../../shared/classes/clock-time-date-group';
+import { calculateElapsedForDate, getStartFinishTimeString } from '../../../../shared/classes/clock-time-date-group';
 import { SubscriptionLike } from 'rxjs';
 import { ClockTimeService } from '../../../../shared/services/clock-time.service';
 
@@ -31,11 +21,9 @@ export class ClockEntryComponent implements OnInit, OnDestroy {
 	protected activeTags: Tag[] = [];
 	protected timeElapsedMs = 0;
 	protected startFinish = '';
+	protected editMode = false;
 
-	constructor(
-		private clockTimeService: ClockTimeService,
-		private cdr: ChangeDetectorRef
-	) {
+	constructor(private clockTimeService: ClockTimeService, private cdr: ChangeDetectorRef) {
 		this.tickSubscription = this.clockTimeService.tick.subscribe(() => {
 			if (!this.clockTime?.finish ?? false) {
 				this.setTimeData();
@@ -45,13 +33,10 @@ export class ClockEntryComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit(): void {
-		const task = this.tasks.find((t) => t.id === this.clockTime?.task);
+		const task = this.tasks.find(t => t.id === this.clockTime?.task);
 		this.taskDescription = task?.name || '';
 		this.setTimeData();
-
-		this.activeTags = this.tags.filter((t) =>
-			(task?.tags || []).includes(t.id)
-		);
+		this.activeTags = this.tags.filter(t => (task?.tags || []).includes(t.id));
 	}
 
 	ngOnDestroy(): void {
@@ -59,14 +44,18 @@ export class ClockEntryComponent implements OnInit, OnDestroy {
 	}
 
 	setTimeData(): void {
-		this.startFinish = getStartFinishTimeString(
-			this.clockTime as ClockTime,
-			this.date as Date
-		);
+		this.startFinish = getStartFinishTimeString(this.clockTime as ClockTime, this.date as Date);
 
-		this.timeElapsedMs = calculateElapsedForDate(
-			this.clockTime as ClockTime,
-			this.date as Date
-		);
+		this.timeElapsedMs = calculateElapsedForDate(this.clockTime as ClockTime, this.date as Date);
+	}
+
+	cancel() {
+		this.editMode = !this.editMode;
+	}
+
+	async save(clockTime: ClockTime) {
+		await this.clockTimeService.updateClockTime(clockTime);
+		this.editMode = false;
+		this.cdr.detectChanges();
 	}
 }

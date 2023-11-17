@@ -1,20 +1,29 @@
 @if(clockTime){
-<div class="px-3 py-1 d-flex gap-2 clock-time">
-	<span class="d-flex gap-2 flex-grow-1">
-		<span class="times" [innerText]="startFinish"></span>
-		<span [innerText]="taskDescription"></span>
-		@for(tag of activeTags; track tag){
-		<app-tag [colour]="tag.colour" [small]="true" [text]="tag.name"></app-tag>
-		}
-	</span>
+<div class="py-1">
+	<div class="px-3 d-flex gap-2 clock-time">
+		@if(editMode){
+		<app-clock-entry-edit [tags]="tags" [tasks]="tasks" [clockTime]="clockTime" (cancel)="cancel()" (save)="save($event)"></app-clock-entry-edit>
+		} @else {
+		<span class="d-flex gap-2 flex-grow-1">
+			<span class="times" [innerText]="startFinish"></span>
+			<span [innerText]="taskDescription"></span>
+			@for(tag of activeTags; track tag){
+			<app-tag [colour]="tag.colour" [small]="true" [text]="tag.name"></app-tag>
+			}
+		</span>
 
-	<span class="time-elapsed text-end">
-		<app-time-stamp [milliseconds]="timeElapsedMs"></app-time-stamp>
-	</span>
-	<span style="width: 28px">
-		<button type="button" class="button-ghost" placement="top" [ngbTooltip]="'Edit'">
-			<i class="fa-solid fa-pencil"></i>
-		</button>
-	</span>
+		<span class="time-elapsed text-end">
+			<app-time-stamp [milliseconds]="timeElapsedMs"></app-time-stamp>
+		</span>
+		<span style="width: 28px">
+			<button type="button" class="button-ghost" placement="top" [ngbTooltip]="'Edit'" (click)="editMode = !editMode">
+				<i class="fa-solid fa-pencil"></i>
+			</button>
+		</span>
+		}
+	</div>
+	@if(!editMode && clockTime.comments){
+	<div class="px-3 comment" [innerText]="clockTime.comments"></div>
+	}
 </div>
 }

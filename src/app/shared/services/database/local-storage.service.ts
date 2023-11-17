@@ -151,12 +151,10 @@ export class LocalStorageService implements DataAccess {
 
 	constructor() {
 		const currentVersion = parseInt(localStorage.getItem('version') || '0', 10);
-		console.log(`Current version is: ${currentVersion}`);
 
 		const migrations = this.migrations.filter(m => m.id > currentVersion).sort((a, b) => a.id - b.id);
 
 		for (const migration of migrations) {
-			console.log(`Upgrading to: ${migration.id}`);
 			migration.upgrade();
 			localStorage.setItem('version', `${migration.id}`);
 		}
@@ -272,6 +270,7 @@ export class LocalStorageService implements DataAccess {
 		currentClockTime.start = clockTime.start;
 		currentClockTime.finish = clockTime.finish;
 		currentClockTime.active = clockTime.active;
+		currentClockTime.comments = clockTime.comments;
 
 		localStorage.setItem('clocktimes', JSON.stringify(clockTimes));
 

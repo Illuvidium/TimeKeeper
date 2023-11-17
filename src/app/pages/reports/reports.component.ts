@@ -53,20 +53,22 @@ export class ReportsComponent implements OnInit {
 
 		this.today = new Date(this.dateTo);
 		this.weekAgo = new Date(this.dateTo);
-		this.weekAgo.setMonth(this.weekAgo.getDate() - 7);
+		this.weekAgo.setDate(this.weekAgo.getDate() - 6);
 		this.monthAgo = new Date(this.dateFrom);
 
 		await this.loadData();
 	}
 
-	protected setLastWeek(): void {
+	protected async setLastWeek(): Promise<void> {
 		this.dateFrom = this.weekAgo;
 		this.dateTo = this.today;
+		await this.loadData();
 	}
 
-	protected setLastMonth(): void {
+	protected async setLastMonth(): Promise<void> {
 		this.dateFrom = this.monthAgo;
 		this.dateTo = this.today;
+		await this.loadData();
 	}
 
 	protected async datesChanged(dateRange: DateRange) {

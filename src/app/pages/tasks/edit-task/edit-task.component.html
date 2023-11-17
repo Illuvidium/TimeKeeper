@@ -5,12 +5,12 @@
 			id="newTaskDescription"
 			placeholder="Description"
 			type="text"
-			[formControlDirective]="taskForm.controls.Description"
+			[formControlDirective]="taskForm.controls.description"
 			(keyup.enter)="saveTask()" />
 	</div>
 	<div class="frm-group">
 		<label>Tags</label>
-		<app-tag-select [(selection)]="taskForm.controls.Tags.value"></app-tag-select>
+		<app-tag-select [(selection)]="taskForm.controls.tags.value"></app-tag-select>
 	</div>
 	<div class="frm-group">
 		<label>&nbsp;</label>
