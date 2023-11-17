@@ -27,13 +27,27 @@ export class DatabaseService implements DataAccess {
 		return this.database.getTag(id);
 	}
 
-	async getTagsByFilter(filter: (tag: Tag) => boolean): Promise<Tag[]> {
-		const tags = await this.database.getTagsByFilter(filter);
-		for (const tag of tags) {
-			const tasks = await this.database.getTasksByFilter(task => task.tags.includes(tag.id));
-			tag.activeLinks = tasks.length;
-		}
+	async getAllTags(): Promise<Tag[]> {
+		const tags = await this.database.getAllTags();
+		return this.getActiveLinksForTags(tags);
+	}
 
+	async getActiveTags(): Promise<Tag[]> {
+		const tags = await this.database.getActiveTags();
+		return this.getActiveLinksForTags(tags);
+	}
+
+	async getTagsByIds(ids: number[]): Promise<Tag[]> {
+		const tags = await this.database.getTagsByIds(ids);
+		return this.getActiveLinksForTags(tags);
+	}
+
+	private async getActiveLinksForTags(tags: Tag[]): Promise<Tag[]> {
+		if (tags.length === 0) return tags;
+		const tasks = await this.database.getActiveTasks();
+		for (const tag of tags) {
+			tag.activeLinks = tasks.filter(t => t.tags.includes(tag.id)).length;
+		}
 		return tags;
 	}
 
@@ -49,20 +63,32 @@ export class DatabaseService implements DataAccess {
 		return this.database.getTask(id);
 	}
 
-	getTasksByFilter(filter: (task: Task) => boolean): Promise<Task[]> {
-		return this.database.getTasksByFilter(filter);
+	getAllTasks(): Promise<Task[]> {
+		return this.database.getAllTasks();
+	}
+
+	getActiveTasks(): Promise<Task[]> {
+		return this.database.getActiveTasks();
+	}
+
+	getTasksByIds(ids: number[]): Promise<Task[]> {
+		return this.database.getTasksByIds(ids);
 	}
 
 	updateTask(task: Task): Promise<Task> {
 		return this.database.updateTask(task);
 	}
 
-	getColour(id: number): Promise<Colour | undefined> {
-		return this.database.getColour(id);
+	getColourById(id: number): Promise<Colour | undefined> {
+		return this.database.getColourById(id);
 	}
 
-	getColoursByFilter(filter: (colour: Colour) => boolean = () => true): Promise<Colour[]> {
-		return this.database.getColoursByFilter(filter);
+	getColourByName(name: string): Promise<Colour | undefined> {
+		return this.database.getColourByName(name);
+	}
+
+	getAllColours(): Promise<Colour[]> {
+		return this.database.getAllColours();
 	}
 
 	addClockTime(clockTime: ClockTime): Promise<ClockTime> {
@@ -73,8 +99,16 @@ export class DatabaseService implements DataAccess {
 		return this.database.getClockTime(id);
 	}
 
-	getClockTimesByFilter(filter: (clockTime: ClockTime) => boolean): Promise<ClockTime[]> {
-		return this.database.getClockTimesByFilter(filter);
+	getClockTimesInDateRange(minDate: Date, maxDate: Date): Promise<ClockTime[]> {
+		return this.database.getClockTimesInDateRange(minDate, maxDate);
+	}
+
+	getActiveClockTime(): Promise<ClockTime | undefined> {
+		return this.database.getActiveClockTime();
+	}
+
+	getClockTimesByIds(ids: number[]): Promise<ClockTime[]> {
+		return this.database.getClockTimesByIds(ids);
 	}
 
 	updateClockTime(clockTime: ClockTime): Promise<ClockTime> {

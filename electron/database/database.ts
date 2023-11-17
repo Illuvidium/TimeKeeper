@@ -1,189 +1,218 @@
 import * as Store from 'electron-store';
 import { migrations } from './migrations';
-import {
-    Tag,
-    Task,
-    Colour,
-    ClockTime,
-    SettingKey,
-} from '../../shared/entities';
+import { Tag, Task, Colour, ClockTime, SettingKey } from '../../shared/entities';
 
 export class Database {
-    private database: Store;
+	private database: Store;
 
-    constructor() {
-        this.database = new Store({
-            name: 'time-keeper',
-            fileExtension: 'database',
-        });
+	constructor() {
+		this.database = new Store({
+			name: 'time-keeper',
+			fileExtension: 'database',
+		});
 
-        const currentVersion = this.database.get('version', 0) as number;
-        const migrationsToPerform = migrations
-            .filter((m) => m.id > currentVersion)
-            .sort((a, b) => a.id - b.id);
+		const currentVersion = this.database.get('version', 0) as number;
+		const migrationsToPerform = migrations.filter(m => m.id > currentVersion).sort((a, b) => a.id - b.id);
 
-        for (const migration of migrationsToPerform) {
-            migration.upgrade(this.database);
-            this.database.set('version', migration.id);
-        }
-    }
+		for (const migration of migrationsToPerform) {
+			migration.upgrade(this.database);
+			this.database.set('version', migration.id);
+		}
+	}
 
-    addTag(tag: Tag): Tag {
-        const tags = this.database.get('tags') as Tag[];
-        const maxId =
-            tags.length > 0 ? tags.sort((a, b) => b.id - a.id)[0].id : 0;
-        tag.id = maxId + 1;
+	addTag(tag: Tag): Tag {
+		const tags = this.database.get('tags') as Tag[];
+		const maxId = tags.length > 0 ? tags.sort((a, b) => b.id - a.id)[0].id : 0;
+		tag.id = maxId + 1;
 
-        tags.push(tag);
-        this.database.set('tags', tags);
+		tags.push(tag);
+		this.database.set('tags', tags);
 
-        return tag;
-    }
+		return tag;
+	}
 
-    getTag(id: number): Tag | undefined {
-        const tags = this.database.get('tags') as Tag[];
-        return tags.find((t) => t.id === id);
-    }
+	getTag(id: number): Tag | undefined {
+		const tags = this.database.get('tags') as Tag[];
+		return tags.find(t => t.id === id);
+	}
 
-    getTagsByFilter(filter: (tag: Tag) => boolean): Tag[] {
-        const tags = this.database.get('tags') as Tag[];
-        return tags.filter(filter);
-    }
+	getAllTags(): Tag[] {
+		const tags = this.database.get('tags') as Tag[];
+		return tags;
+	}
 
-    updateTag(tag: Tag): Tag {
-        const tags = this.database.get('tags') as Tag[];
-        const currentTag = tags.find((t) => t.id === tag.id);
-        if (!currentTag) return this.addTag(tag);
+	getActiveTags(): Tag[] {
+		const tags = this.database.get('tags') as Tag[];
+		return tags.filter(t => t.active);
+	}
 
-        currentTag.name = tag.name;
-        currentTag.colour = tag.colour;
-        currentTag.active = tag.active;
+	getTagsByIds(ids: number[]): Tag[] {
+		const tags = this.database.get('tags') as Tag[];
+		return tags.filter(t => ids.includes(t.id));
+	}
 
-        this.database.set('tags', tags);
+	updateTag(tag: Tag): Tag {
+		const tags = this.database.get('tags') as Tag[];
+		const currentTag = tags.find(t => t.id === tag.id);
+		if (!currentTag) return this.addTag(tag);
 
-        return currentTag;
-    }
+		currentTag.name = tag.name;
+		currentTag.colour = tag.colour;
+		currentTag.active = tag.active;
 
-    deleteTag(tag: Tag): boolean {
-        const currentTag = this.getTag(tag.id);
-        if (!currentTag) return true;
+		this.database.set('tags', tags);
 
-        currentTag.active = false;
-        this.updateTag(currentTag);
-        return true;
-    }
+		return currentTag;
+	}
 
-    addTask(task: Task): Task {
-        const tasks = this.database.get('tasks') as Task[];
-        const maxId =
-            tasks.length > 0 ? tasks.sort((a, b) => b.id - a.id)[0].id : 0;
-        task.id = maxId + 1;
+	deleteTag(tag: Tag): boolean {
+		const currentTag = this.getTag(tag.id);
+		if (!currentTag) return true;
 
-        tasks.push(task);
-        this.database.set('tasks', tasks);
+		currentTag.active = false;
+		this.updateTag(currentTag);
+		return true;
+	}
 
-        return task;
-    }
+	addTask(task: Task): Task {
+		const tasks = this.database.get('tasks') as Task[];
+		const maxId = tasks.length > 0 ? tasks.sort((a, b) => b.id - a.id)[0].id : 0;
+		task.id = maxId + 1;
 
-    getTask(id: number): Task | undefined {
-        const tasks = this.database.get('tasks') as Task[];
-        return tasks.find((t) => t.id === id);
-    }
+		tasks.push(task);
+		this.database.set('tasks', tasks);
 
-    getTasksByFilter(filter: (task: Task) => boolean): Task[] {
-        const tasks = this.database.get('tasks') as Task[];
-        return tasks.filter(filter);
-    }
+		return task;
+	}
 
-    updateTask(task: Task): Task {
-        const tasks = this.database.get('tasks') as Task[];
-        const currentTask = tasks.find((t) => t.id === task.id);
-        if (!currentTask) return this.addTask(task);
+	getTask(id: number): Task | undefined {
+		const tasks = this.database.get('tasks') as Task[];
+		return tasks.find(t => t.id === id);
+	}
 
-        currentTask.name = task.name;
-        currentTask.tags = task.tags;
-        currentTask.active = task.active;
+	getAllTasks(): Task[] {
+		const tasks = this.database.get('tasks') as Task[];
+		return tasks;
+	}
 
-        this.database.set('tasks', tasks);
+	getActiveTasks(): Task[] {
+		const tasks = this.database.get('tasks') as Task[];
+		return tasks.filter(t => t.active);
+	}
 
-        return currentTask;
-    }
+	getTasksByIds(ids: number[]): Task[] {
+		const tasks = this.database.get('tasks') as Task[];
+		return tasks.filter(t => ids.includes(t.id));
+	}
 
-    deleteTask(task: Task): boolean {
-        const currentTask = this.getTask(task.id);
-        if (!currentTask) return true;
+	updateTask(task: Task): Task {
+		const tasks = this.database.get('tasks') as Task[];
+		const currentTask = tasks.find(t => t.id === task.id);
+		if (!currentTask) return this.addTask(task);
 
-        currentTask.active = false;
-        this.updateTask(currentTask);
-        return true;
-    }
+		currentTask.name = task.name;
+		currentTask.tags = task.tags;
+		currentTask.active = task.active;
 
-    getColour(id: number): Colour | undefined {
-        const colours = this.database.get('colours') as Colour[];
-        return colours.find((c) => c.id === id);
-    }
+		this.database.set('tasks', tasks);
 
-    getColoursByFilter(filter: (tag: Colour) => boolean): Colour[] {
-        const colours = this.database.get('colours') as Colour[];
-        return colours.filter(filter);
-    }
+		return currentTask;
+	}
 
-    addClockTime(clockTime: ClockTime): ClockTime {
-        const clockTimes = this.database.get('clocktimes') as ClockTime[];
-        const maxId =
-            clockTimes.length > 0
-                ? clockTimes.sort((a, b) => b.id - a.id)[0].id
-                : 0;
-        clockTime.id = maxId + 1;
+	deleteTask(task: Task): boolean {
+		const currentTask = this.getTask(task.id);
+		if (!currentTask) return true;
 
-        clockTimes.push(clockTime);
-        this.database.set('clocktimes', clockTimes);
+		currentTask.active = false;
+		this.updateTask(currentTask);
+		return true;
+	}
 
-        return clockTime;
-    }
+	getColourById(id: number): Colour | undefined {
+		const colours = this.database.get('colours') as Colour[];
+		return colours.find(c => c.id === id);
+	}
 
-    getClockTime(id: number): ClockTime | undefined {
-        const clockTimes = this.database.get('clocktimes') as ClockTime[];
-        return clockTimes.find((t) => t.id === id);
-    }
+	getColourByName(name: string): Colour | undefined {
+		const colours = this.database.get('colours') as Colour[];
+		return colours.find(c => c.name === name);
+	}
 
-    getClockTimesByFilter(filter: (tag: ClockTime) => boolean): ClockTime[] {
-        const clockTimes = this.database.get('clocktimes') as ClockTime[];
-        return clockTimes.filter(filter);
-    }
+	getAllColours(): Colour[] {
+		const colours = this.database.get('colours') as Colour[];
+		return colours;
+	}
 
-    updateClockTime(clockTime: ClockTime): ClockTime {
-        const clockTimes = this.database.get('clocktimes') as ClockTime[];
-        const currentClockTime = clockTimes.find((t) => t.id === clockTime.id);
-        if (!currentClockTime) return this.addClockTime(clockTime);
+	addClockTime(clockTime: ClockTime): ClockTime {
+		const clockTimes = this.database.get('clocktimes') as ClockTime[];
+		const maxId = clockTimes.length > 0 ? clockTimes.sort((a, b) => b.id - a.id)[0].id : 0;
+		clockTime.id = maxId + 1;
 
-        currentClockTime.task = clockTime.task;
-        currentClockTime.start = clockTime.start;
-        currentClockTime.finish = clockTime.finish;
-        currentClockTime.active = clockTime.active;
+		clockTimes.push(clockTime);
+		this.database.set('clocktimes', clockTimes);
 
-        this.database.set('clocktimes', clockTimes);
+		return clockTime;
+	}
 
-        return currentClockTime;
-    }
+	getClockTime(id: number): ClockTime | undefined {
+		const clockTimes = this.database.get('clocktimes') as ClockTime[];
+		return clockTimes.find(t => t.id === id);
+	}
 
-    deleteClockTime(clockTime: ClockTime): boolean {
-        const currentClockTime = this.getClockTime(clockTime.id);
-        if (!currentClockTime) return true;
+	getClockTimesInDateRange(minDate: Date, maxDate: Date): ClockTime[] {
+		const clockTimes = this.database.get('clocktimes') as ClockTime[];
+		return clockTimes.filter(c => {
+			const start = new Date(c.start);
+			const finish = c.finish ? new Date(c.finish) : new Date();
+			if (start >= minDate && start <= maxDate) return true;
+			if (finish >= minDate && finish <= maxDate) return true;
+			if (start < minDate && finish >= maxDate) return true;
+			return false;
+		});
+	}
 
-        currentClockTime.active = false;
-        this.updateClockTime(currentClockTime);
-        return true;
-    }
+	getActiveClockTime(): ClockTime | undefined {
+		const clockTimes = this.database.get('clocktimes') as ClockTime[];
+		return clockTimes.find(t => !t.finish);
+	}
 
-    getSetting(key: SettingKey): any {
-        const settings = (this.database.get('settings') as any) ?? {};
-        return settings[key];
-    }
+	getClockTimesByIds(ids: number[]): ClockTime[] {
+		const clockTimes = this.database.get('clocktimes') as ClockTime[];
+		return clockTimes.filter(c => ids.includes(c.id));
+	}
 
-    updateSetting(key: SettingKey, value: any): any {
-        const settings = (this.database.get('settings') as any) ?? {};
-        settings[key] = value;
-        this.database.set('settings', settings);
-    }
+	updateClockTime(clockTime: ClockTime): ClockTime {
+		const clockTimes = this.database.get('clocktimes') as ClockTime[];
+		const currentClockTime = clockTimes.find(t => t.id === clockTime.id);
+		if (!currentClockTime) return this.addClockTime(clockTime);
+
+		currentClockTime.task = clockTime.task;
+		currentClockTime.start = clockTime.start;
+		currentClockTime.finish = clockTime.finish;
+		currentClockTime.active = clockTime.active;
+
+		this.database.set('clocktimes', clockTimes);
+
+		return currentClockTime;
+	}
+
+	deleteClockTime(clockTime: ClockTime): boolean {
+		const currentClockTime = this.getClockTime(clockTime.id);
+		if (!currentClockTime) return true;
+
+		currentClockTime.active = false;
+		this.updateClockTime(currentClockTime);
+		return true;
+	}
+
+	getSetting(key: SettingKey): any {
+		const settings = (this.database.get('settings') as any) ?? {};
+		return settings[key];
+	}
+
+	updateSetting(key: SettingKey, value: any): any {
+		const settings = (this.database.get('settings') as any) ?? {};
+		settings[key] = value;
+		this.database.set('settings', settings);
+	}
 }

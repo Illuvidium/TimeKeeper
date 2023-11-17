@@ -25,11 +25,11 @@ export class TaskService {
 	}
 
 	async getAllTasks(): Promise<Task[]> {
-		return await this.databaseService.getTasksByFilter(() => true);
+		return await this.databaseService.getAllTasks();
 	}
 
 	async getActiveTasks(): Promise<Task[]> {
-		return await this.databaseService.getTasksByFilter(t => t.active);
+		return await this.databaseService.getActiveTasks();
 	}
 
 	async getTaskById(id: number): Promise<Task | undefined> {
@@ -37,7 +37,7 @@ export class TaskService {
 	}
 
 	async getTaskByIds(ids: number[]): Promise<Task[]> {
-		return await this.databaseService.getTasksByFilter(t => ids.includes(t.id));
+		return await this.databaseService.getTasksByIds(ids);
 	}
 }
 

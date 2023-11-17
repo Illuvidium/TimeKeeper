@@ -152,6 +152,7 @@ export class ClockBarComponent implements OnInit, OnDestroy {
 		this.setTaskDesctiption();
 		this.clockTimeService.startTicking();
 		await this.electronService.getApi()?.setActiveIcon();
+		this.cdr.detectChanges();
 	}
 
 	setTaskDesctiption() {
@@ -179,7 +180,9 @@ export class ClockBarComponent implements OnInit, OnDestroy {
 			if (setIdle) {
 				this.activeClockTime = undefined;
 				await this.electronService.getApi()?.setIdleIcon();
+				this.cdr.detectChanges();
 			}
+			this.cdr.detectChanges();
 		}
 	}
 }

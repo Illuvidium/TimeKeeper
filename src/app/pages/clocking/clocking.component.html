@@ -2,11 +2,8 @@
 	<h2>Clocking</h2>
 
 	<ul>
-		<li>Edit times</li>
 		<li>Overlapping indicator</li>
-		<li>Remove mod 1 edit</li>
-		<li>Update on save</li>
-		<li>Load more dates more elegant</li>
+		<li>Validate finish after start</li>
 	</ul>
 
 	@if(clockTimeDates.length){
@@ -36,10 +33,6 @@
 			</div>
 		</div>
 		}
-	</div>
-	} @if(!noMoreDates){
-	<div class="frm-group">
-		<button type="button" class="frm-control button-primary w-100" [disabled]="loadingDates" (click)="loadMoreDates()">Load more dates</button>
 	</div>
 	}
 </div>

@@ -20,9 +20,14 @@ export class ElectronStorageService implements DataAccess {
 	getTag(id: number): Promise<Tag | undefined> {
 		return this.electronAPI?.getTag(id) || Promise.reject();
 	}
-	async getTagsByFilter(filter: (tag: Tag) => boolean): Promise<Tag[]> {
-		const allTags = await this.electronAPI?.getAllTags();
-		return allTags?.filter(filter) || Promise.reject();
+	getAllTags(): Promise<Tag[]> {
+		return this.electronAPI?.getAllTags() || Promise.reject();
+	}
+	getActiveTags(): Promise<Tag[]> {
+		return this.electronAPI?.getActiveTags() || Promise.reject();
+	}
+	getTagsByIds(ids: number[]): Promise<Tag[]> {
+		return this.electronAPI?.getTagsByIds(ids) || Promise.reject();
 	}
 	updateTag(tag: Tag): Promise<Tag> {
 		return this.electronAPI?.updateTag(tag) || Promise.reject();
@@ -33,19 +38,26 @@ export class ElectronStorageService implements DataAccess {
 	getTask(id: number): Promise<Task | undefined> {
 		return this.electronAPI?.getTask(id) || Promise.reject();
 	}
-	async getTasksByFilter(filter: (task: Task) => boolean): Promise<Task[]> {
-		const allTasks = await this.electronAPI?.getAllTasks();
-		return allTasks?.filter(filter) || Promise.reject();
+	getAllTasks(): Promise<Task[]> {
+		return this.electronAPI?.getAllTasks() || Promise.reject();
+	}
+	getActiveTasks(): Promise<Task[]> {
+		return this.electronAPI?.getActiveTasks() || Promise.reject();
+	}
+	getTasksByIds(ids: number[]): Promise<Task[]> {
+		return this.electronAPI?.getTasksByIds(ids) || Promise.reject();
 	}
 	updateTask(task: Task): Promise<Task> {
 		return this.electronAPI?.updateTask(task) || Promise.reject();
 	}
-	getColour(id: number): Promise<Colour | undefined> {
-		return this.electronAPI?.getColour(id) || Promise.reject();
+	getColourById(id: number): Promise<Colour | undefined> {
+		return this.electronAPI?.getColourById(id) || Promise.reject();
 	}
-	async getColoursByFilter(filter: (colour: Colour) => boolean): Promise<Colour[]> {
-		const allColours = await this.electronAPI?.getAllColours();
-		return allColours?.filter(filter) || Promise.reject();
+	getColourByName(name: string): Promise<Colour | undefined> {
+		return this.electronAPI?.getColourByName(name) || Promise.reject();
+	}
+	getAllColours(): Promise<Colour[]> {
+		return this.electronAPI?.getAllColours() || Promise.reject();
 	}
 	addClockTime(clockTime: ClockTime): Promise<ClockTime> {
 		return this.electronAPI?.addClockTime(clockTime) || Promise.reject();
@@ -53,9 +65,14 @@ export class ElectronStorageService implements DataAccess {
 	getClockTime(id: number): Promise<ClockTime | undefined> {
 		return this.electronAPI?.getClockTime(id) || Promise.reject();
 	}
-	async getClockTimesByFilter(filter: (clockTime: ClockTime) => boolean): Promise<ClockTime[]> {
-		const allClockTimes = await this.electronAPI?.getAllClockTimes();
-		return allClockTimes?.filter(filter) || Promise.reject();
+	getClockTimesInDateRange(minDate: Date, maxDate: Date): Promise<ClockTime[]> {
+		return this.electronAPI?.getClockTimesInDateRange(minDate, maxDate) || Promise.reject();
+	}
+	getActiveClockTime(): Promise<ClockTime | undefined> {
+		return this.electronAPI?.getActiveClockTime() || Promise.reject();
+	}
+	getClockTimesByIds(ids: number[]): Promise<ClockTime[]> {
+		return this.electronAPI?.getClockTimesByIds(ids) || Promise.reject();
 	}
 	updateClockTime(clockTime: ClockTime): Promise<ClockTime> {
 		return this.electronAPI?.updateClockTime(clockTime) || Promise.reject();

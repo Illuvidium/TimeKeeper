@@ -21,7 +21,10 @@ export class ClockTimeService {
 	}
 
 	stopTicking() {
-		if (this.tickInterval) clearInterval(this.tickInterval);
+		if (this.tickInterval) {
+			clearInterval(this.tickInterval);
+			this.tickInterval = undefined;
+		}
 	}
 
 	constructor(private databaseService: DatabaseService) {}
@@ -43,19 +46,11 @@ export class ClockTimeService {
 	// }
 
 	async getClockTimesInDateRange(minDate: Date, maxDate: Date): Promise<ClockTime[]> {
-		return await this.databaseService.getClockTimesByFilter(c => {
-			const start = new Date(c.start);
-			const finish = c.finish ? new Date(c.finish) : new Date();
-			if (start >= minDate && start <= maxDate) return true;
-			if (finish >= minDate && finish <= maxDate) return true;
-			if (start < minDate && finish >= maxDate) return true;
-			return false;
-		});
+		return await this.databaseService.getClockTimesInDateRange(minDate, maxDate);
 	}
 
 	async getActiveClockTime(): Promise<ClockTime | undefined> {
-		const clockTimes = await this.databaseService.getClockTimesByFilter(t => !t.finish);
-		return clockTimes.length > 0 ? clockTimes[0] : undefined;
+		return await this.databaseService.getActiveClockTime();
 	}
 
 	async getClockTimeById(id: number): Promise<ClockTime | undefined> {
@@ -63,7 +58,7 @@ export class ClockTimeService {
 	}
 
 	async getClockTimeByIds(ids: number[]): Promise<ClockTime[]> {
-		return await this.databaseService.getClockTimesByFilter(t => ids.includes(t.id));
+		return await this.databaseService.getClockTimesByIds(ids);
 	}
 }
 

@@ -176,9 +176,19 @@ export class LocalStorageService implements DataAccess {
 		return Promise.resolve(tags.find(t => t.id === id));
 	}
 
-	getTagsByFilter(filter: (tag: Tag) => boolean): Promise<Tag[]> {
+	getAllTags(): Promise<Tag[]> {
 		const tags = JSON.parse(localStorage.getItem('tags') || '') as Tag[];
-		return Promise.resolve(tags.filter(filter));
+		return Promise.resolve(tags);
+	}
+
+	getActiveTags(): Promise<Tag[]> {
+		const tags = JSON.parse(localStorage.getItem('tags') || '') as Tag[];
+		return Promise.resolve(tags.filter(t => t.active));
+	}
+
+	getTagsByIds(ids: number[]): Promise<Tag[]> {
+		const tags = JSON.parse(localStorage.getItem('tags') || '') as Tag[];
+		return Promise.resolve(tags.filter(t => ids.includes(t.id)));
 	}
 
 	updateTag(tag: Tag): Promise<Tag> {
@@ -211,9 +221,19 @@ export class LocalStorageService implements DataAccess {
 		return Promise.resolve(tasks.find(t => t.id === id));
 	}
 
-	getTasksByFilter(filter: (task: Task) => boolean): Promise<Task[]> {
+	getAllTasks(): Promise<Task[]> {
 		const tasks = JSON.parse(localStorage.getItem('tasks') || '') as Task[];
-		return Promise.resolve(tasks.filter(filter));
+		return Promise.resolve(tasks);
+	}
+
+	getActiveTasks(): Promise<Task[]> {
+		const tasks = JSON.parse(localStorage.getItem('tasks') || '') as Task[];
+		return Promise.resolve(tasks.filter(t => t.active));
+	}
+
+	getTasksByIds(ids: number[]): Promise<Task[]> {
+		const tasks = JSON.parse(localStorage.getItem('tasks') || '') as Task[];
+		return Promise.resolve(tasks.filter(t => ids.includes(t.id)));
 	}
 
 	updateTask(task: Task): Promise<Task> {
@@ -230,14 +250,19 @@ export class LocalStorageService implements DataAccess {
 		return Promise.resolve(currentTask);
 	}
 
-	getColour(id: number): Promise<Colour | undefined> {
+	getColourById(id: number): Promise<Colour | undefined> {
 		const colours = JSON.parse(localStorage.getItem('colours') || '') as Colour[];
 		return Promise.resolve(colours.find(c => c.id === id));
 	}
 
-	getColoursByFilter(filter: (tag: Colour) => boolean): Promise<Colour[]> {
+	getColourByName(name: string): Promise<Colour | undefined> {
 		const colours = JSON.parse(localStorage.getItem('colours') || '') as Colour[];
-		return Promise.resolve(colours.filter(filter));
+		return Promise.resolve(colours.find(c => c.name === name));
+	}
+
+	getAllColours(): Promise<Colour[]> {
+		const colours = JSON.parse(localStorage.getItem('colours') || '') as Colour[];
+		return Promise.resolve(colours);
 	}
 
 	addClockTime(clockTime: ClockTime): Promise<ClockTime> {
@@ -256,9 +281,28 @@ export class LocalStorageService implements DataAccess {
 		return Promise.resolve(clockTimes.find(t => t.id === id));
 	}
 
-	getClockTimesByFilter(filter: (clockTime: ClockTime) => boolean): Promise<ClockTime[]> {
+	getClockTimesInDateRange(minDate: Date, maxDate: Date): Promise<ClockTime[]> {
 		const clockTimes = JSON.parse(localStorage.getItem('clocktimes') || '') as ClockTime[];
-		return Promise.resolve(clockTimes.filter(filter));
+		return Promise.resolve(
+			clockTimes.filter(c => {
+				const start = new Date(c.start);
+				const finish = c.finish ? new Date(c.finish) : new Date();
+				if (start >= minDate && start <= maxDate) return true;
+				if (finish >= minDate && finish <= maxDate) return true;
+				if (start < minDate && finish >= maxDate) return true;
+				return false;
+			})
+		);
+	}
+
+	getActiveClockTime(): Promise<ClockTime | undefined> {
+		const clockTimes = JSON.parse(localStorage.getItem('clocktimes') || '') as ClockTime[];
+		return Promise.resolve(clockTimes.find(t => !t.finish));
+	}
+
+	getClockTimesByIds(ids: number[]): Promise<ClockTime[]> {
+		const clockTimes = JSON.parse(localStorage.getItem('clocktimes') || '') as ClockTime[];
+		return Promise.resolve(clockTimes.filter(c => ids.includes(c.id)));
 	}
 
 	updateClockTime(clockTime: ClockTime): Promise<ClockTime> {

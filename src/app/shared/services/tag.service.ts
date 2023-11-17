@@ -25,11 +25,11 @@ export class TagService {
 	}
 
 	async getAllTags(): Promise<Tag[]> {
-		return await this.databaseService.getTagsByFilter(() => true);
+		return await this.databaseService.getAllTags();
 	}
 
 	async getActiveTags(): Promise<Tag[]> {
-		return await this.databaseService.getTagsByFilter(t => t.active);
+		return await this.databaseService.getActiveTags();
 	}
 
 	async getTagById(id: number): Promise<Tag | undefined> {
@@ -37,7 +37,7 @@ export class TagService {
 	}
 
 	async getTagByIds(ids: number[]): Promise<Tag[]> {
-		return await this.databaseService.getTagsByFilter(t => ids.includes(t.id));
+		return await this.databaseService.getTagsByIds(ids);
 	}
 }
 
