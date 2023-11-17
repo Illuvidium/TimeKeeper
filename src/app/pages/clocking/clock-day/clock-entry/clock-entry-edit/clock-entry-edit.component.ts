@@ -2,7 +2,14 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
 import { ClockTime, Tag, Task } from '../../../../../../../shared/entities';
 import { DropdownItem } from '../../../../../shared/components/dropdown/dropdown.component';
-import { DateNonFutureValidator, FormControl, FormGroup, RequiredValidator, TimeNonFutureValidator } from '../../../../../shared/classes/forms';
+import {
+	DateNonFutureValidator,
+	DateTimeAfterOtherDateTime,
+	FormControl,
+	FormGroup,
+	RequiredValidator,
+	TimeNonFutureValidator,
+} from '../../../../../shared/classes/forms';
 import { ValidationService } from '../../../../../shared/services/validation.service';
 
 @Component({
@@ -46,6 +53,13 @@ export class ClockEntryEditComponent {
 		this.clockEntryForm.controls.finishTime = new FormControl(this.timeModelFinish, 'Finish time', [new RequiredValidator()]);
 		this.clockEntryForm.controls.finishTime.validators.push(
 			new TimeNonFutureValidator(this.clockEntryForm.controls.finishDate as FormControl<NgbDateStruct>)
+		);
+		this.clockEntryForm.controls.finishDate.validators.push(
+			new DateTimeAfterOtherDateTime(
+				this.clockEntryForm.controls.startDate as FormControl<NgbDateStruct>,
+				this.clockEntryForm.controls.startTime as FormControl<NgbTimeStruct>,
+				this.clockEntryForm.controls.finishTime as FormControl<NgbTimeStruct>
+			)
 		);
 	}
 	@Output() cancel: EventEmitter<void> = new EventEmitter<void>();

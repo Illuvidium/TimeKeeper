@@ -135,3 +135,44 @@ export class TimeNonFutureValidator implements FormControlValidator {
 		this.formControlDate = formControlDate;
 	}
 }
+
+export class DateTimeAfterOtherDateTime implements FormControlValidator {
+	validate: (dateFinishControl: FormControl<NgbDateStruct>) => boolean = (dateFinishControl: FormControl<NgbDateStruct>) => {
+		const dateModelStart: NgbDateStruct = this.dateStartControl.value;
+		const timeModelStart: NgbTimeStruct = this.timeStartControl.value;
+		const dateModelFinish: NgbDateStruct = dateFinishControl.value;
+		const timeModelFinish: NgbTimeStruct = this.timeFinishControl.value;
+		const dateStart = new Date(
+			dateModelStart.year,
+			dateModelStart.month - 1,
+			dateModelStart.day,
+			timeModelStart.hour,
+			timeModelStart.minute,
+			timeModelStart.second
+		);
+		const dateFinish = new Date(
+			dateModelFinish.year,
+			dateModelFinish.month - 1,
+			dateModelFinish.day,
+			timeModelFinish.hour,
+			timeModelFinish.minute,
+			timeModelFinish.second
+		);
+		return dateStart < dateFinish;
+	};
+	validationMessage = '[NAME] cannot be after the start date';
+
+	dateStartControl: FormControl<NgbDateStruct>;
+	timeStartControl: FormControl<NgbTimeStruct>;
+	timeFinishControl: FormControl<NgbTimeStruct>;
+
+	constructor(
+		dateStartControl: FormControl<NgbDateStruct>,
+		timeStartControl: FormControl<NgbTimeStruct>,
+		timeFinishControl: FormControl<NgbTimeStruct>
+	) {
+		this.dateStartControl = dateStartControl;
+		this.timeStartControl = timeStartControl;
+		this.timeFinishControl = timeFinishControl;
+	}
+}
