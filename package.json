@@ -1,23 +1,31 @@
 {
   "name": "timekeeper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Time keeping app",
-  "author": {"name": "Rini Lindhoud"},
+  "author": {
+    "name": "Rini Lindhoud"
+  },
   "main": "electron/main.js",
   "private": true,
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "ng": "ng",
     "start": "npm-run-all -p electron:serve ng:serve",
-    "ng:serve": "ng serve -c web -o", 
+    "ng:serve": "ng serve -c web -o",
     "build": "npm run electron:serve-tsc && ng build --base-href ./",
     "build:dev": "npm run build -- -c dev",
     "build:prod": "npm run build -- -c production",
     "web:build": "npm run build -- -c web-production",
     "electron": "electron",
+    "electron:serve-tsc": "tsc -p tsconfig.serve.json",
     "electron:serve": "wait-on tcp:4200 && npm run electron:serve-tsc && electron . --serve",
     "electron:local": "npm run build:prod && electron .",
     "electron:build": "npm run build:prod && electron-builder build --publish=never",
+    "test": "ng test --watch=false",
+    "test:watch": "ng test",
+    "e2e": "npm run build:prod && playwright test -c e2e/playwright.config.ts e2e/",
+    "e2e:show-trace": "playwright show-trace e2e/tracing/trace.zip",
+    "version": "conventional-changelog -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
     "lint": "ng lint"
   },
   "dependencies": {
@@ -32,6 +40,7 @@
     "@fortawesome/fontawesome-free": "^6.4.2",
     "@ng-bootstrap/ng-bootstrap": "^16.0.0-rc.0",
     "@popperjs/core": "^2.11.8",
+    "@trodi/electron-splashscreen": "^1.0.2",
     "bootstrap": "^5.3.2",
     "electron-store": "^8.1.0",
     "moment": "^2.29.4",

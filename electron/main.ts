@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-//import * as electronDebug from 'electron-debug';
-//import * as electronReloader from 'electron-reloader';
 import { Database } from './database/database';
 import { Tag, Task, Colour, ClockTime, SettingKey } from '../shared/entities';
+import * as Splashscreen from '@trodi/electron-splashscreen';
 
 let win: BrowserWindow | null = null;
 const database: Database = new Database();
@@ -14,13 +14,11 @@ const args = process.argv.slice(1),
 
 const createWindow = async () => {
 	// Create the browser window.
-	win = new BrowserWindow({
-		x: 0,
-		y: 0,
+	const windowOptions = {
 		width: 1200,
 		height: 800,
 		minWidth: 800,
-		minHeight: 400,
+		minHeight: 600,
 		autoHideMenuBar: true,
 		frame: false,
 		title: 'Timekeeper',
@@ -32,7 +30,19 @@ const createWindow = async () => {
 			contextIsolation: true,
 			preload: path.join(__dirname, 'preload.js'),
 		},
+	};
+
+	win = Splashscreen.initSplashScreen({
+		windowOpts: windowOptions,
+		templateUrl: path.join(__dirname, 'splash/index.html'),
+		delay: 0, // force show immediately since example will load fast
+		minVisible: 500, // show for 1.5s so example is obvious
+		splashScreenOpts: {
+			height: 600,
+			width: 800,
+		},
 	});
+	//win = new BrowserWindow(windowOptions);
 
 	win.setMenuBarVisibility(false);
 	win.setMenu(null);
@@ -123,10 +133,12 @@ const createWindow = async () => {
 	ipcMain.handle('updateSetting', async (event, key: SettingKey, value: any): Promise<any> => await database.updateSetting(key, value));
 
 	if (serve) {
-		//const debug = require('electron-debug');
-		//electronDebug();
+		const electronDebug: any = await import('electron-debug');
+		electronDebug();
 
-		//electronReloader(module);
+		const electronReloader: any = await import('electron-reloader');
+		electronReloader(module);
+
 		await win.loadURL('http://localhost:4200');
 	} else {
 		// Path when running electron executable
