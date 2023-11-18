@@ -18,7 +18,7 @@
 	<div class="items" ngbDropdownMenu>
 		@for(item of items; track item){
 		<button ngbDropdownItem class="d-flex gap-1" [style.color]="item.foreground" [style.backgroundColor]="item.background" (click)="select(item)">
-			<span class="flex-grow-1" [class.with-tags]="item.tags.length" [innerText]="item.text"></span>
+			<span class="flex-grow-1" [class.with-tags]="item.tags.length" [style.color]="item.foreground" [innerText]="item.text"></span>
 			@for(tag of item.tags; track tag){
 			<app-tag [colour]="tag.colour" [small]="true" [text]="tag.name"></app-tag>
 			}

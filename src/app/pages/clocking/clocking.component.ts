@@ -22,8 +22,6 @@ export class ClockingComponent implements OnInit, OnDestroy {
 	protected tags: Tag[] = [];
 	protected clockTimes: ClockTime[] = [];
 	protected clockTimeDates: ClockTimeDateGroup[] = [];
-	protected loadingDates = false;
-	protected noMoreDates = false;
 
 	constructor(
 		private tagService: TagService,
@@ -42,8 +40,31 @@ export class ClockingComponent implements OnInit, OnDestroy {
 
 			dateGroup.clockTimes = dateGroup.clockTimes.filter(ct => ct.id !== event.clockTime.id);
 			dateGroup.clockTimes.push(event.clockTime);
-			dateGroup.updateStats();
 
+			if (!this.tasks.some(t => t.id === event.clockTime.task)) {
+				this.taskService
+					.getTaskById(event.clockTime.task)
+					.then(t => {
+						this.tasks.push(t as Task);
+						dateGroup?.updateStats();
+						this.cdr.detectChanges();
+
+						const newTagIds = t?.tags.filter(id => !this.tags.some(tag => tag.id === id)) ?? [];
+						if (newTagIds.length > 0) {
+							this.tagService
+								.getTagByIds(newTagIds)
+								.then(tags => {
+									this.tags = this.tags.concat(tags);
+									dateGroup?.updateStats();
+									this.cdr.detectChanges();
+								})
+								.catch(() => {});
+						}
+					})
+					.catch(() => {});
+			}
+
+			dateGroup.updateStats();
 			this.cdr.detectChanges();
 		});
 
@@ -67,7 +88,6 @@ export class ClockingComponent implements OnInit, OnDestroy {
 
 	protected async loadMoreDates() {
 		const maxDate = this.lastLoadedMinDate || new Date();
-		this.loadingDates = true;
 
 		if (this.lastLoadedMinDate === undefined) {
 			maxDate.setHours(0);
@@ -82,8 +102,6 @@ export class ClockingComponent implements OnInit, OnDestroy {
 
 		let entries = await this.clockTimeService.getClockTimesInDateRange(minDate, maxDate);
 		entries = entries.filter(ct => !this.clockTimes.some(c => c.id === ct.id));
-
-		this.noMoreDates = entries.length === 0;
 
 		// Process new entries and assign them to dates
 		while (maxDate >= minDate) {
@@ -112,7 +130,6 @@ export class ClockingComponent implements OnInit, OnDestroy {
 		const newTaskIds = entries.map(c => c.task).filter(id => !this.tasks.some(t => t.id === id));
 
 		if (!newTaskIds.length) {
-			this.loadingDates = false;
 			this.cdr.detectChanges();
 			return;
 		}
@@ -123,14 +140,12 @@ export class ClockingComponent implements OnInit, OnDestroy {
 		const newTagIds = newTasks.flatMap(t => t.tags).filter(id => !this.tags.some(t => t.id === id));
 
 		if (!newTagIds.length) {
-			this.loadingDates = false;
 			this.cdr.detectChanges();
 			return;
 		}
 
 		const newTags = await this.tagService.getTagByIds(newTagIds);
 		this.tags = this.tags.concat(newTags);
-		this.loadingDates = false;
 
 		this.cdr.detectChanges();
 	}

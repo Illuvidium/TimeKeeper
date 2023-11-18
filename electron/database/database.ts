@@ -1,218 +1,234 @@
-import * as Store from 'electron-store';
+import * as sqlite3 from 'sqlite3';
+import * as sqlite from 'sqlite';
 import { migrations } from './migrations';
 import { Tag, Task, Colour, ClockTime, SettingKey } from '../../shared/entities';
+import { app } from 'electron';
+import * as path from 'path';
 
 export class Database {
-	private database: Store;
+	private database: sqlite.Database<sqlite3.Database> | undefined;
 
-	constructor() {
-		this.database = new Store({
-			name: 'time-keeper',
-			fileExtension: 'database',
+	constructor() {}
+
+	async initConnection(): Promise<void> {
+		const location = path.join(app.getPath('userData'), 'timekeeper.db');
+		this.database = await sqlite.open({
+			filename: location,
+			driver: sqlite3.Database,
 		});
 
-		const currentVersion = this.database.get('version', 0) as number;
-		const migrationsToPerform = migrations.filter(m => m.id > currentVersion).sort((a, b) => a.id - b.id);
-
-		for (const migration of migrationsToPerform) {
-			migration.upgrade(this.database);
-			this.database.set('version', migration.id);
+		let currentVersion = 0;
+		try {
+			const v: Version | undefined = await this.database.get('SELECT version FROM Version');
+			currentVersion = v?.version ?? 0;
+		} catch (err) {
+			console.error(err);
 		}
+		console.log('Current version in electron: ' + currentVersion);
+
+		const migrationsToPerform = migrations.filter(m => m.id > currentVersion).sort((a, b) => a.id - b.id);
+		for (const migration of migrationsToPerform) {
+			await migration.upgrade(this.database);
+			await this.database.run('UPDATE Version SET version = ?', migration.id);
+		}
+		console.log('database init done');
 	}
 
-	addTag(tag: Tag): Tag {
-		const tags = this.database.get('tags') as Tag[];
-		const maxId = tags.length > 0 ? tags.sort((a, b) => b.id - a.id)[0].id : 0;
-		tag.id = maxId + 1;
-
-		tags.push(tag);
-		this.database.set('tags', tags);
+	// Tags
+	async addTag(tag: Tag): Promise<Tag> {
+		const result = await this.database?.run('INSERT INTO Tags (Name, Colour, Active) VALUES (?, ?, ?)', tag.name, tag.colour, tag.active);
+		tag.id = result?.lastID ?? tag.id;
 
 		return tag;
 	}
 
-	getTag(id: number): Tag | undefined {
-		const tags = this.database.get('tags') as Tag[];
-		return tags.find(t => t.id === id);
+	async getTag(id: number): Promise<Tag | undefined> {
+		return await this.database?.get('SELECT id, name, colour, active FROM Tags WHERE id = ?', id);
 	}
 
-	getAllTags(): Tag[] {
-		const tags = this.database.get('tags') as Tag[];
-		return tags;
+	async getAllTags(): Promise<Tag[]> {
+		return (await this.database?.all('SELECT id, name, colour, active FROM Tags')) ?? [];
 	}
 
-	getActiveTags(): Tag[] {
-		const tags = this.database.get('tags') as Tag[];
-		return tags.filter(t => t.active);
+	async getActiveTags(): Promise<Tag[]> {
+		return (await this.database?.all('SELECT id, name, colour, active FROM Tags WHERE active = 1')) ?? [];
 	}
 
-	getTagsByIds(ids: number[]): Tag[] {
-		const tags = this.database.get('tags') as Tag[];
-		return tags.filter(t => ids.includes(t.id));
+	async getTagsByIds(ids: number[]): Promise<Tag[]> {
+		return (await this.database?.all(`SELECT id, name, colour, active FROM Tags WHERE id in (${ids.map(() => '?').join(',')})`, ids)) ?? [];
 	}
 
-	updateTag(tag: Tag): Tag {
-		const tags = this.database.get('tags') as Tag[];
-		const currentTag = tags.find(t => t.id === tag.id);
-		if (!currentTag) return this.addTag(tag);
-
-		currentTag.name = tag.name;
-		currentTag.colour = tag.colour;
-		currentTag.active = tag.active;
-
-		this.database.set('tags', tags);
-
-		return currentTag;
+	async updateTag(tag: Tag): Promise<Tag> {
+		await this.database?.run('UPDATE Tags SET name = ?, colour = ?, active = ? WHERE id = ?', tag.name, tag.colour, tag.active, tag.id);
+		return tag;
 	}
 
-	deleteTag(tag: Tag): boolean {
-		const currentTag = this.getTag(tag.id);
-		if (!currentTag) return true;
+	// Tasks
+	async addTask(task: Task): Promise<Task> {
+		const result = await this.database?.run('INSERT INTO Tasks (Name, Active) VALUES (?, ?)', task.name, task.active);
+		task.id = result?.lastID ?? task.id;
 
-		currentTag.active = false;
-		this.updateTag(currentTag);
-		return true;
-	}
-
-	addTask(task: Task): Task {
-		const tasks = this.database.get('tasks') as Task[];
-		const maxId = tasks.length > 0 ? tasks.sort((a, b) => b.id - a.id)[0].id : 0;
-		task.id = maxId + 1;
-
-		tasks.push(task);
-		this.database.set('tasks', tasks);
+		for (const tag of task.tags) {
+			await this.database?.run('INSERT INTO TaskTags (Task, Tag) VALUES (?, ?)', task.id, tag);
+		}
 
 		return task;
 	}
 
-	getTask(id: number): Task | undefined {
-		const tasks = this.database.get('tasks') as Task[];
-		return tasks.find(t => t.id === id);
+	private async getTagsForTask(taskId: number): Promise<number[]> {
+		return (await this.database?.all(`SELECT tag FROM TaskTags WHERE task = ?`, taskId))?.map(x => x.tag as number) ?? [];
 	}
 
-	getAllTasks(): Task[] {
-		const tasks = this.database.get('tasks') as Task[];
+	private async setTagsForTasks(tasks: Task[]): Promise<Task[]> {
+		const taskTags: TaskTag[] =
+			(await this.database?.all(
+				`SELECT task, tag FROM TaskTags WHERE task IN (${tasks.map(() => '?').join(',')})`,
+				tasks.map(t => t.id)
+			)) ?? [];
+		for (const task of tasks) {
+			task.tags = taskTags.filter(tt => tt.task === task.id).map(tt => tt.tag);
+		}
 		return tasks;
 	}
 
-	getActiveTasks(): Task[] {
-		const tasks = this.database.get('tasks') as Task[];
-		return tasks.filter(t => t.active);
+	async getTask(id: number): Promise<Task | undefined> {
+		const task: Task | undefined = await this.database?.get('SELECT id, name, active FROM Tasks WHERE id = ?', id);
+		if (task) {
+			task.tags = await this.getTagsForTask(id);
+		}
+		return task;
 	}
 
-	getTasksByIds(ids: number[]): Task[] {
-		const tasks = this.database.get('tasks') as Task[];
-		return tasks.filter(t => ids.includes(t.id));
+	async getAllTasks(): Promise<Task[]> {
+		const tasks: Task[] = (await this.database?.all('SELECT id, name, active FROM Tasks')) ?? [];
+		return this.setTagsForTasks(tasks);
 	}
 
-	updateTask(task: Task): Task {
-		const tasks = this.database.get('tasks') as Task[];
-		const currentTask = tasks.find(t => t.id === task.id);
-		if (!currentTask) return this.addTask(task);
-
-		currentTask.name = task.name;
-		currentTask.tags = task.tags;
-		currentTask.active = task.active;
-
-		this.database.set('tasks', tasks);
-
-		return currentTask;
+	async getActiveTasks(): Promise<Task[]> {
+		const tasks: Task[] = (await this.database?.all('SELECT id, name, active FROM Tasks WHERE Active = 1')) ?? [];
+		return this.setTagsForTasks(tasks);
 	}
 
-	deleteTask(task: Task): boolean {
-		const currentTask = this.getTask(task.id);
-		if (!currentTask) return true;
-
-		currentTask.active = false;
-		this.updateTask(currentTask);
-		return true;
+	async getTasksByIds(ids: number[]): Promise<Task[]> {
+		const tasks: Task[] =
+			(await this.database?.all(`SELECT id, name, active FROM Tasks WHERE id IN (${ids.map(() => '?').join(',')})`, ids)) ?? [];
+		return this.setTagsForTasks(tasks);
 	}
 
-	getColourById(id: number): Colour | undefined {
-		const colours = this.database.get('colours') as Colour[];
-		return colours.find(c => c.id === id);
+	async updateTask(task: Task): Promise<Task> {
+		await this.database?.run('UPDATE Tasks SET name = ?, active = ? WHERE id = ?', task.name, task.active, task.id);
+		await this.database?.run('DELETE FROM TaskTags WHERE Task = ?', task.id);
+		for (const tag of task.tags) {
+			await this.database?.run('INSERT INTO TaskTags (Task, Tag) VALUES (?, ?)', task.id, tag);
+		}
+		return task;
 	}
 
-	getColourByName(name: string): Colour | undefined {
-		const colours = this.database.get('colours') as Colour[];
-		return colours.find(c => c.name === name);
+	// Colour
+	async getColourById(id: number): Promise<Colour | undefined> {
+		return await this.database?.get('SELECT id, name, background, foreground FROM Colours WHERE id = ?', id);
 	}
 
-	getAllColours(): Colour[] {
-		const colours = this.database.get('colours') as Colour[];
-		return colours;
+	async getColourByName(name: string): Promise<Colour | undefined> {
+		return await this.database?.get('SELECT id, name, background, foreground FROM Colours WHERE name = ?', name);
 	}
 
-	addClockTime(clockTime: ClockTime): ClockTime {
-		const clockTimes = this.database.get('clocktimes') as ClockTime[];
-		const maxId = clockTimes.length > 0 ? clockTimes.sort((a, b) => b.id - a.id)[0].id : 0;
-		clockTime.id = maxId + 1;
+	async getAllColours(): Promise<Colour[]> {
+		return (await this.database?.all('SELECT id, name, background, foreground FROM Colours')) ?? [];
+	}
 
-		clockTimes.push(clockTime);
-		this.database.set('clocktimes', clockTimes);
-
+	// ClockTime
+	async addClockTime(clockTime: ClockTime): Promise<ClockTime> {
+		const result = await this.database?.run(
+			'INSERT INTO ClockTimes (task, comments, start, active) VALUES (?, ?, ?, 1)',
+			clockTime.task,
+			clockTime.comments,
+			clockTime.start
+		);
+		clockTime.id = result?.lastID ?? clockTime.id;
 		return clockTime;
 	}
 
-	getClockTime(id: number): ClockTime | undefined {
-		const clockTimes = this.database.get('clocktimes') as ClockTime[];
-		return clockTimes.find(t => t.id === id);
+	async getClockTime(id: number): Promise<ClockTime | undefined> {
+		return await this.database?.get('SELECT id, task, start, finish, comments, active FROM ClockTimes WHERE id = ?', id);
 	}
 
-	getClockTimesInDateRange(minDate: Date, maxDate: Date): ClockTime[] {
-		const clockTimes = this.database.get('clocktimes') as ClockTime[];
-		return clockTimes.filter(c => {
-			const start = new Date(c.start);
-			const finish = c.finish ? new Date(c.finish) : new Date();
-			if (start >= minDate && start <= maxDate) return true;
-			if (finish >= minDate && finish <= maxDate) return true;
-			if (start < minDate && finish >= maxDate) return true;
-			return false;
-		});
+	async getClockTimesInDateRange(minDate: Date, maxDate: Date): Promise<ClockTime[]> {
+		return (
+			(await this.database?.all(
+				`
+				SELECT id, task, start, finish, comments, active 
+				FROM ClockTimes
+				WHERE active = 1
+				AND (
+					? BETWEEN start AND IFNULL(finish, strftime('%s') * 1000)
+					OR ? BETWEEN start AND IFNULL(finish, strftime('%s') * 1000)
+					OR ? < start AND ? > IFNULL(finish, strftime('%s') * 1000)
+				)`,
+				minDate,
+				maxDate,
+				minDate,
+				maxDate
+			)) ?? []
+		);
 	}
 
-	getActiveClockTime(): ClockTime | undefined {
-		const clockTimes = this.database.get('clocktimes') as ClockTime[];
-		return clockTimes.find(t => !t.finish);
+	async getActiveClockTime(): Promise<ClockTime | undefined> {
+		return await this.database?.get('SELECT id, task, start, finish, comments, active FROM ClockTimes WHERE finish IS NULL AND active = 1');
 	}
 
-	getClockTimesByIds(ids: number[]): ClockTime[] {
-		const clockTimes = this.database.get('clocktimes') as ClockTime[];
-		return clockTimes.filter(c => ids.includes(c.id));
+	async getClockTimesByIds(ids: number[]): Promise<ClockTime[]> {
+		return (
+			(await this.database?.all(
+				`SELECT id, task, start, finish, comments, active FROM ClockTimes WHERE id IN (${ids.map(() => '?').join(',')})`,
+				ids
+			)) ?? []
+		);
 	}
 
-	updateClockTime(clockTime: ClockTime): ClockTime {
-		const clockTimes = this.database.get('clocktimes') as ClockTime[];
-		const currentClockTime = clockTimes.find(t => t.id === clockTime.id);
-		if (!currentClockTime) return this.addClockTime(clockTime);
-
-		currentClockTime.task = clockTime.task;
-		currentClockTime.start = clockTime.start;
-		currentClockTime.finish = clockTime.finish;
-		currentClockTime.active = clockTime.active;
-
-		this.database.set('clocktimes', clockTimes);
-
-		return currentClockTime;
+	async updateClockTime(clockTime: ClockTime): Promise<ClockTime> {
+		await this.database?.run(
+			'UPDATE ClockTimes SET task = ?, start = ?, finish = ?, comments = ?, active = ? WHERE id = ?',
+			clockTime.task,
+			clockTime.start,
+			clockTime.finish,
+			clockTime.comments,
+			clockTime.active,
+			clockTime.id
+		);
+		return clockTime;
 	}
 
-	deleteClockTime(clockTime: ClockTime): boolean {
-		const currentClockTime = this.getClockTime(clockTime.id);
-		if (!currentClockTime) return true;
-
-		currentClockTime.active = false;
-		this.updateClockTime(currentClockTime);
-		return true;
+	async getSetting(key: SettingKey): Promise<any> {
+		const setting: Setting | undefined = await this.database?.get('SELECT id, name, value FROM Settings WHERE name = ?', key);
+		switch (key) {
+			case SettingKey.Tags_SortOrder:
+			case SettingKey.Tasks_SortOrder:
+			case SettingKey.ReportTags_SortOrder:
+			case SettingKey.ReportTasks_SortOrder:
+				return setting?.value ?? '';
+			case SettingKey.Tags_ShowInactive:
+			case SettingKey.Tasks_ShowInactive:
+				return setting ? setting.value === 'true' : false;
+		}
 	}
 
-	getSetting(key: SettingKey): any {
-		const settings = (this.database.get('settings') as any) ?? {};
-		return settings[key];
+	async updateSetting(key: SettingKey, value: any): Promise<void> {
+		await this.database?.run('REPLACE INTO Settings (name, value) VALUES (?, ?)', key, `${value}`);
 	}
+}
 
-	updateSetting(key: SettingKey, value: any): any {
-		const settings = (this.database.get('settings') as any) ?? {};
-		settings[key] = value;
-		this.database.set('settings', settings);
-	}
+interface Version {
+	version: number;
+}
+
+interface TaskTag {
+	task: number;
+	tag: number;
+}
+
+interface Setting {
+	id: number;
+	name: string;
+	value: string;
 }

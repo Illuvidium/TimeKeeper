@@ -12,12 +12,25 @@ import { ClockTimeService } from '../../../../shared/services/clock-time.service
 })
 export class ClockEntryComponent implements OnInit, OnDestroy {
 	@Input() date: Date | undefined;
-	@Input() tags: Tag[] = [];
-	@Input() tasks: Task[] = [];
-	@Input() clockTime: ClockTime | undefined;
+	@Input() set tags(value: Tag[]) {
+		this._tags = value;
+		this.setEntryData();
+	}
+	@Input() set tasks(value: Task[]) {
+		this._tasks = value;
+		this.setEntryData();
+	}
+	@Input() set clockTime(value: ClockTime | undefined) {
+		this._clockTime = value;
+		this.setEntryData();
+	}
 	@Input() overlaps = false;
 
 	private tickSubscription: SubscriptionLike;
+	protected _tags: Tag[] = [];
+	protected _tasks: Task[] = [];
+	protected _clockTime: ClockTime | undefined;
+
 	protected taskDescription = '';
 	protected activeTags: Tag[] = [];
 	protected timeElapsedMs = 0;
@@ -27,26 +40,29 @@ export class ClockEntryComponent implements OnInit, OnDestroy {
 	constructor(private clockTimeService: ClockTimeService, private cdr: ChangeDetectorRef) {
 		this.tickSubscription = this.clockTimeService.tick.subscribe(() => {
 			if (!this.clockTime?.finish ?? false) {
-				this.setTimeData();
-				this.cdr.detectChanges();
+				this.setEntryData();
 			}
 		});
 	}
 
 	ngOnInit(): void {
-		const task = this.tasks.find(t => t.id === this.clockTime?.task);
-		this.taskDescription = task?.name || '';
-		this.setTimeData();
-		this.activeTags = this.tags.filter(t => (task?.tags || []).includes(t.id));
+		this.setEntryData();
 	}
 
 	ngOnDestroy(): void {
 		this.tickSubscription.unsubscribe();
 	}
 
-	setTimeData(): void {
-		this.startFinish = getStartFinishTimeString(this.clockTime as ClockTime, this.date as Date);
-		this.timeElapsedMs = calculateElapsedForDate(this.clockTime as ClockTime, this.date as Date);
+	setEntryData(): void {
+		const task = this._tasks.find(t => t.id === this._clockTime?.task);
+		this.taskDescription = task?.name || '';
+		this.activeTags = this._tags.filter(t => (task?.tags || []).includes(t.id));
+		if (this._clockTime) {
+			this.startFinish = getStartFinishTimeString(this._clockTime, this.date as Date);
+			this.timeElapsedMs = calculateElapsedForDate(this._clockTime, this.date as Date);
+		}
+
+		this.cdr.detectChanges();
 	}
 
 	cancel() {
@@ -55,7 +71,7 @@ export class ClockEntryComponent implements OnInit, OnDestroy {
 
 	async save(clockTime: ClockTime) {
 		await this.clockTimeService.updateClockTime(clockTime);
-		this.setTimeData();
+		this.setEntryData();
 		this.editMode = false;
 		this.cdr.detectChanges();
 	}

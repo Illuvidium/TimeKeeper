@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { PageNotFoundComponent } from './components/';
 import { FormControlDirective } from './directives/form-control.directive';
 import { FormsModule } from '@angular/forms';
 import { TagComponent } from './components/tag/tag.component';
@@ -18,36 +17,35 @@ import { TimeStampComponent } from './components/time-stamp/time-stamp.component
 import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
 
 @NgModule({
-    declarations: [
-        PageNotFoundComponent,
-        FormControlDirective,
-        TagComponent,
-        DropdownComponent,
-        ColourDropdownComponent,
-        ToggleComponent,
-        ValidationSummaryComponent,
-        TagSelectComponent,
-        StopwatchComponent,
-        ClockBarComponent,
-        TimeStampComponent,
-        DateRangePickerComponent,
-    ],
-    imports: [CommonModule, TranslateModule, FormsModule, NgbModule],
-    exports: [
-        TranslateModule,
-        FormControlDirective,
-        FormsModule,
-        NgbModule,
-        TagComponent,
-        DropdownComponent,
-        ColourDropdownComponent,
-        ToggleComponent,
-        ValidationSummaryComponent,
-        TagSelectComponent,
-        StopwatchComponent,
-        ClockBarComponent,
-        TimeStampComponent,
-        DateRangePickerComponent,
-    ],
+	declarations: [
+		FormControlDirective,
+		TagComponent,
+		DropdownComponent,
+		ColourDropdownComponent,
+		ToggleComponent,
+		ValidationSummaryComponent,
+		TagSelectComponent,
+		StopwatchComponent,
+		ClockBarComponent,
+		TimeStampComponent,
+		DateRangePickerComponent,
+	],
+	imports: [CommonModule, TranslateModule, FormsModule, NgbModule],
+	exports: [
+		TranslateModule,
+		FormControlDirective,
+		FormsModule,
+		NgbModule,
+		TagComponent,
+		DropdownComponent,
+		ColourDropdownComponent,
+		ToggleComponent,
+		ValidationSummaryComponent,
+		TagSelectComponent,
+		StopwatchComponent,
+		ClockBarComponent,
+		TimeStampComponent,
+		DateRangePickerComponent,
+	],
 })
 export class SharedModule {}

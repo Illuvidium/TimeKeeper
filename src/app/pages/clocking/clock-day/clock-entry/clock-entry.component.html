@@ -1,8 +1,13 @@
-@if(clockTime){
+@if(_clockTime){
 <div class="py-1">
 	<div class="px-3 d-flex gap-2 clock-time">
 		@if(editMode){
-		<app-clock-entry-edit [tags]="tags" [tasks]="tasks" [clockTime]="clockTime" (cancel)="cancel()" (save)="save($event)"></app-clock-entry-edit>
+		<app-clock-entry-edit
+			[tags]="_tags"
+			[tasks]="_tasks"
+			[clockTime]="_clockTime"
+			(cancel)="cancel()"
+			(save)="save($event)"></app-clock-entry-edit>
 		} @else {
 		<span class="d-flex gap-2 flex-grow-1">
 			<span class="times" [class.warning]="overlaps" [innerText]="startFinish"></span>
@@ -25,8 +30,8 @@
 		</span>
 		}
 	</div>
-	@if(!editMode && clockTime.comments){
-	<div class="px-3 comment" [innerText]="clockTime.comments"></div>
+	@if(!editMode && _clockTime.comments){
+	<div class="px-3 comment" [innerText]="_clockTime.comments"></div>
 	}
 </div>
 }

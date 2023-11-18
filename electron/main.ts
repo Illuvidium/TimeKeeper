@@ -87,42 +87,40 @@ const createWindow = async () => {
 	});
 
 	// Tags
-	ipcMain.handle('addTag', (event, tag: Tag): Tag => database.addTag(tag));
-	ipcMain.handle('getTag', (event, id: number): Tag | undefined => database.getTag(id));
-	ipcMain.handle('getAllTags', (): Tag[] => database.getAllTags());
-	ipcMain.handle('getActiveTags', (): Tag[] => database.getActiveTags());
-	ipcMain.handle('getTagsByIds', (event, ids: number[]): Tag[] => database.getTagsByIds(ids));
-	ipcMain.handle('updateTag', (event, tag: Tag): Tag => database.updateTag(tag));
-	ipcMain.handle('deleteTag', (event, tag: Tag): boolean => database.deleteTag(tag));
+	ipcMain.handle('addTag', async (event, tag: Tag): Promise<Tag> => await database.addTag(tag));
+	ipcMain.handle('getTag', async (event, id: number): Promise<Tag | undefined> => await database.getTag(id));
+	ipcMain.handle('getAllTags', async (): Promise<Tag[]> => await database.getAllTags());
+	ipcMain.handle('getActiveTags', async (): Promise<Tag[]> => await database.getActiveTags());
+	ipcMain.handle('getTagsByIds', async (event, ids: number[]): Promise<Tag[]> => await database.getTagsByIds(ids));
+	ipcMain.handle('updateTag', async (event, tag: Tag): Promise<Tag> => await database.updateTag(tag));
 
 	// Tasks
-	ipcMain.handle('addTask', (event, task: Task): Task => database.addTask(task));
-	ipcMain.handle('getTask', (event, id: number): Task | undefined => database.getTask(id));
-	ipcMain.handle('getAllTasks', (): Task[] => database.getAllTasks());
-	ipcMain.handle('getActiveTasks', (): Task[] => database.getActiveTasks());
-	ipcMain.handle('getTasksByIds', (event, ids: number[]): Task[] => database.getTasksByIds(ids));
-	ipcMain.handle('updateTask', (event, Task: Task): Task => database.updateTask(Task));
-	ipcMain.handle('deleteTask', (event, task: Task): boolean => database.deleteTask(task));
+	ipcMain.handle('addTask', async (event, task: Task): Promise<Task> => await database.addTask(task));
+	ipcMain.handle('getTask', async (event, id: number): Promise<Task | undefined> => await database.getTask(id));
+	ipcMain.handle('getAllTasks', async (): Promise<Task[]> => await database.getAllTasks());
+	ipcMain.handle('getActiveTasks', async (): Promise<Task[]> => await database.getActiveTasks());
+	ipcMain.handle('getTasksByIds', async (event, ids: number[]): Promise<Task[]> => await database.getTasksByIds(ids));
+	ipcMain.handle('updateTask', async (event, Task: Task): Promise<Task> => await database.updateTask(Task));
 
 	// Colours
-	ipcMain.handle('getColourById', (event, id: number): Colour | undefined => database.getColourById(id));
-	ipcMain.handle('getColourByName', (event, name: string): Colour | undefined => database.getColourByName(name));
-	ipcMain.handle('getAllColours', (): Colour[] => database.getAllColours());
+	ipcMain.handle('getColourById', async (event, id: number): Promise<Colour | undefined> => await database.getColourById(id));
+	ipcMain.handle('getColourByName', async (event, name: string): Promise<Colour | undefined> => await database.getColourByName(name));
+	ipcMain.handle('getAllColours', async (): Promise<Colour[]> => await database.getAllColours());
 
 	// ClockTimes
-	ipcMain.handle('addClockTime', (event, clockTime: ClockTime): ClockTime => database.addClockTime(clockTime));
-	ipcMain.handle('getClockTime', (event, id: number): ClockTime | undefined => database.getClockTime(id));
-	ipcMain.handle('getClockTimesInDateRange', (event, minDate: Date, maxDate: Date): ClockTime[] =>
-		database.getClockTimesInDateRange(minDate, maxDate)
+	ipcMain.handle('addClockTime', async (event, clockTime: ClockTime): Promise<ClockTime> => await database.addClockTime(clockTime));
+	ipcMain.handle('getClockTime', async (event, id: number): Promise<ClockTime | undefined> => await database.getClockTime(id));
+	ipcMain.handle(
+		'getClockTimesInDateRange',
+		async (event, minDate: Date, maxDate: Date): Promise<ClockTime[]> => await database.getClockTimesInDateRange(minDate, maxDate)
 	);
-	ipcMain.handle('getActiveClockTime', (): ClockTime | undefined => database.getActiveClockTime());
-	ipcMain.handle('getClockTimesByIds', (event, ids: number[]): ClockTime[] => database.getClockTimesByIds(ids));
-	ipcMain.handle('updateClockTime', (event, clockTime: ClockTime): ClockTime => database.updateClockTime(clockTime));
-	ipcMain.handle('deleteClockTime', (event, clockTime: ClockTime): boolean => database.deleteClockTime(clockTime));
+	ipcMain.handle('getActiveClockTime', async (): Promise<ClockTime | undefined> => await database.getActiveClockTime());
+	ipcMain.handle('getClockTimesByIds', async (event, ids: number[]): Promise<ClockTime[]> => await database.getClockTimesByIds(ids));
+	ipcMain.handle('updateClockTime', async (event, clockTime: ClockTime): Promise<ClockTime> => await database.updateClockTime(clockTime));
 
 	// Settings
-	ipcMain.handle('getSetting', (event, key: SettingKey): any => database.getSetting(key));
-	ipcMain.handle('updateSetting', (event, key: SettingKey, value: any): any => database.updateSetting(key, value));
+	ipcMain.handle('getSetting', async (event, key: SettingKey): Promise<any> => await database.getSetting(key));
+	ipcMain.handle('updateSetting', async (event, key: SettingKey, value: any): Promise<any> => await database.updateSetting(key, value));
 
 	if (serve) {
 		//const debug = require('electron-debug');
@@ -149,6 +147,7 @@ const createWindow = async () => {
 try {
 	app.whenReady()
 		.then(async () => {
+			await database.initConnection();
 			await createWindow();
 
 			app.on('activate', () => {
@@ -158,7 +157,9 @@ try {
 						.catch(() => {});
 			});
 		})
-		.catch(() => {});
+		.catch(err => {
+			console.error(err);
+		});
 
 	app.on('window-all-closed', () => {
 		if (process.platform !== 'darwin') app.quit();

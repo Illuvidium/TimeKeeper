@@ -49,6 +49,7 @@ export class ReportsComponent implements OnInit {
 		this.dateTo.setMinutes(0);
 		this.dateTo.setSeconds(0);
 		this.dateTo.setMilliseconds(0);
+		this.dateTo.setDate(this.dateTo.getDate() + 1);
 		this.dateFrom.setMonth(this.dateFrom.getMonth() - 1);
 
 		this.today = new Date(this.dateTo);
