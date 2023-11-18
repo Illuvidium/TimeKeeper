@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as electronDebug from 'electron-debug';
-import * as electronReloader from 'electron-reloader';
+//import * as electronDebug from 'electron-debug';
+//import * as electronReloader from 'electron-reloader';
 import { Database } from './database/database';
 import { Tag, Task, Colour, ClockTime, SettingKey } from '../shared/entities';
 
@@ -124,9 +124,9 @@ const createWindow = async () => {
 
 	if (serve) {
 		//const debug = require('electron-debug');
-		electronDebug();
+		//electronDebug();
 
-		electronReloader(module);
+		//electronReloader(module);
 		await win.loadURL('http://localhost:4200');
 	} else {
 		// Path when running electron executable
