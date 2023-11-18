@@ -55,7 +55,7 @@
     "@ngx-translate/core": "15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "@playwright/test": "^1.39.0",
-    "@types/jasmine": "^4.6.1",
+    "@types/jasmine": "^5.1.2",
     "@types/jasminewd2": "^2.0.12",
     "@types/node": "^18.18.8",
     "@types/uuid": "^9.0.7",
