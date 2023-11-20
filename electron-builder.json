@@ -17,8 +17,18 @@
   "win": {
     "icon": "dist/assets/icons/logo.png",
     "target": [
-      "portable"
-    ]
+      "msi", "nsis"
+    ],
+	"nsis": {
+		"oneClick": false,
+		"createDesktopShortcut": true,
+		"createStartMenuShortcut": true
+	  },
+	  "msi": {
+		"oneClick": false,
+		"createDesktopShortcut": true,
+		"createStartMenuShortcut": true
+	  }
   },
   "portable": {
     "splashImage": "dist/assets/icons/logo.png"

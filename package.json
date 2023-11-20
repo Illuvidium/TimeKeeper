@@ -1,6 +1,6 @@
 {
   "name": "timekeeper",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Time keeping app",
   "author": {
     "name": "Rini Lindhoud"
@@ -26,7 +26,8 @@
     "e2e": "npm run build:prod && playwright test -c e2e/playwright.config.ts e2e/",
     "e2e:show-trace": "playwright show-trace e2e/tracing/trace.zip",
     "version": "conventional-changelog -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "dist": "electron-builder"
   },
   "dependencies": {
     "@angular/common": "^17.0.2",
@@ -93,6 +94,32 @@
     "typescript": "~5.2.2",
     "wait-on": "^7.1.0",
     "webdriver-manager": "^12.1.9"
+  },
+  "build": {
+    "productName": "Timekeeper",
+    "directories": {
+      "buildResources": "./electron/icons",
+        "output": "output"
+    },
+    "win": {
+        "target": [
+            "nsis"
+        ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true
+    },
+    "linux": {
+        "target": [
+            "deb",
+            "rpm",
+            "snap",
+            "AppImage"
+        ]
+    },
+    "icon": "./electron/icons/default.png"
   },
   "engines": {
     "node": ">= 16.14.0 || >= 18.10.0"
