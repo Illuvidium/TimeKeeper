@@ -32,8 +32,9 @@ export class ClockBarComponent implements OnInit, OnDestroy {
 		return this.activeClockTime ? 'Switch task' : 'Start clocking';
 	}
 
+	protected _taskOptions: DropdownItem[] = [];
 	get taskOptions(): DropdownItem[] {
-		return this.tasks
+		const tasks = this.tasks
 			.filter(t => t.active || this.activeClockTime?.task === t.id)
 			.orderBy(t => t.name)
 			.map(
@@ -44,6 +45,10 @@ export class ClockBarComponent implements OnInit, OnDestroy {
 						this.tags.filter(tag => t.tags.includes(tag.id))
 					)
 			);
+
+		if (JSON.stringify(this._taskOptions) !== JSON.stringify(tasks)) this._taskOptions = tasks;
+
+		return this._taskOptions;
 	}
 
 	constructor(
@@ -174,9 +179,12 @@ export class ClockBarComponent implements OnInit, OnDestroy {
 
 	async stopTask(setIdle = true) {
 		setIdle && this.clockTimeService.stopTicking();
-		if (this.activeClockTime) {
-			this.activeClockTime.finish = new Date();
-			await this.clockTimeService.updateClockTime(this.activeClockTime);
+
+		// Reload from database to make sure we have the latest version
+		const activeClockTime = await this.clockTimeService.getActiveClockTime();
+		if (activeClockTime) {
+			activeClockTime.finish = new Date();
+			await this.clockTimeService.updateClockTime(activeClockTime);
 			if (setIdle) {
 				this.activeClockTime = undefined;
 				await this.electronService.getApi()?.setIdleIcon();

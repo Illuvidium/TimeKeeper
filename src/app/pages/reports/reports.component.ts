@@ -54,7 +54,7 @@ export class ReportsComponent implements OnInit {
 
 		this.today = new Date(this.dateTo);
 		this.weekAgo = new Date(this.dateTo);
-		this.weekAgo.setDate(this.weekAgo.getDate() - 6);
+		this.weekAgo.setDate(this.weekAgo.getDate() - 7);
 		this.monthAgo = new Date(this.dateFrom);
 
 		await this.loadData();
